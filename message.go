@@ -10,6 +10,70 @@ type Message struct {
 	Body   interface{}
 }
 
+func (message *Message) IsRequest() (IsRequest bool) {
+
+	switch message.Header.MessageType {
+	case PFCP_HEARTBEAT_REQUEST:
+		IsRequest = true
+	case PFCP_PFD_MANAGEMENT_REQUEST:
+		IsRequest = true
+	case PFCP_ASSOCIATION_SETUP_REQUEST:
+		IsRequest = true
+	case PFCP_ASSOCIATION_UPDATE_REQUEST:
+		IsRequest = true
+	case PFCP_ASSOCIATION_RELEASE_REQUEST:
+		IsRequest = true
+	case PFCP_NODE_REPORT_REQUEST:
+		IsRequest = true
+	case PFCP_SESSION_SET_DELETION_REQUEST:
+		IsRequest = true
+	case PFCP_SESSION_ESTABLISHMENT_REQUEST:
+		IsRequest = true
+	case PFCP_SESSION_MODIFICATION_REQUEST:
+		IsRequest = true
+	case PFCP_SESSION_DELETION_REQUEST:
+		IsRequest = true
+	case PFCP_SESSION_REPORT_REQUEST:
+		IsRequest = true
+	default:
+		IsRequest = false
+	}
+
+	return
+}
+
+func (message *Message) IsResponse() (IsResponse bool) {
+	IsResponse = false
+	switch message.Header.MessageType {
+	case PFCP_HEARTBEAT_RESPONSE:
+		IsResponse = true
+	case PFCP_PFD_MANAGEMENT_RESPONSE:
+		IsResponse = true
+	case PFCP_ASSOCIATION_SETUP_RESPONSE:
+		IsResponse = true
+	case PFCP_ASSOCIATION_UPDATE_RESPONSE:
+		IsResponse = true
+	case PFCP_ASSOCIATION_RELEASE_RESPONSE:
+		IsResponse = true
+	case PFCP_NODE_REPORT_RESPONSE:
+		IsResponse = true
+	case PFCP_SESSION_SET_DELETION_RESPONSE:
+		IsResponse = true
+	case PFCP_SESSION_ESTABLISHMENT_RESPONSE:
+		IsResponse = true
+	case PFCP_SESSION_MODIFICATION_RESPONSE:
+		IsResponse = true
+	case PFCP_SESSION_DELETION_RESPONSE:
+		IsResponse = true
+	case PFCP_SESSION_REPORT_RESPONSE:
+		IsResponse = true
+	default:
+		IsResponse = false
+	}
+
+	return
+}
+
 type HeartbeatRequest struct {
 	RecoveryTimeStamp *pfcpType.RecoveryTimeStamp `tlv:"96"`
 }
