@@ -2,6 +2,7 @@ package pfcpType
 
 import (
 	"fmt"
+	"free5gc/lib/pfcp/logger"
 	"free5gc/lib/util_3gpp"
 	"math/bits"
 	"net"
@@ -59,8 +60,11 @@ func (u *UserPlaneIPResourceInformation) MarshalBinary() (data []byte, err error
 
 	// Octet k to l
 	if u.Assoni {
-		AssoniBuf, _ := u.NetworkInstance.MarshalBinary()
-		data = append(data, AssoniBuf...)
+		if assoniBuf, err := u.NetworkInstance.MarshalBinary(); err != nil {
+			logger.PFCPLog.Warnf("MarshalBinary failed: %+v", err)
+		} else {
+			data = append(data, assoniBuf...)
+		}
 	}
 
 	// Octet r

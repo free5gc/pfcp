@@ -45,7 +45,8 @@ func (s *SDFFilter) MarshalBinary() (data []byte, err error) {
 		idx = idx + 2
 
 		if len(s.FlowDescription) != int(s.LengthOfFlowDescription) {
-			return []byte(""), fmt.Errorf("Unmatch length of flow description: Expect %d, got %d", s.LengthOfFlowDescription, len(s.FlowDescription))
+			return []byte(""), fmt.Errorf("Unmatch length of flow description: Expect %d, got %d",
+				s.LengthOfFlowDescription, len(s.FlowDescription))
 		}
 		data = append(data, s.FlowDescription...)
 		idx = idx + uint16(len(s.FlowDescription))

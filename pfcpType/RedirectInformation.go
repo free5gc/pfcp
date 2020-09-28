@@ -27,7 +27,8 @@ func (r *RedirectInformation) MarshalBinary() (data []byte, err error) {
 
 	// Octet 8 to (8+a)
 	if len(r.RedirectServerAddress) != int(r.RedirectServerAddressLength) {
-		return []byte(""), fmt.Errorf("Unmatch length of redirect server address: Expect %d, got %d", r.RedirectServerAddressLength, len(r.RedirectServerAddress))
+		return []byte(""), fmt.Errorf("Unmatch length of redirect server address: Expect %d, got %d",
+			r.RedirectServerAddressLength, len(r.RedirectServerAddress))
 	}
 	data = append(data, r.RedirectServerAddress...)
 

@@ -15,7 +15,8 @@ func (f *ForwardingPolicy) MarshalBinary() (data []byte, err error) {
 
 	// Octet 6 to (6+a)
 	if len(f.ForwardingPolicyIdentifier) != int(f.ForwardingPolicyIdentifierLength) {
-		return []byte(""), fmt.Errorf("Unmatch length of forwarding policy identifier: Expect %d, got %d", f.ForwardingPolicyIdentifierLength, len(f.ForwardingPolicyIdentifier))
+		return []byte(""), fmt.Errorf("Unmatch length of forwarding policy identifier: Expect %d, got %d",
+			f.ForwardingPolicyIdentifierLength, len(f.ForwardingPolicyIdentifier))
 	}
 	data = append(data, f.ForwardingPolicyIdentifier...)
 

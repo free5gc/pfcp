@@ -83,16 +83,16 @@ type HeartbeatResponse struct {
 }
 
 type PFCPPFDManagementRequest struct {
-	ApplicationIDsPFDs *ApplicationIDsPFDs `tlv:"58"`
+	ApplicationIDsPFDs []ApplicationIDsPFDs `tlv:"58"`
 }
 
 type ApplicationIDsPFDs struct {
-	ApplicationID *pfcpType.ApplicationID `tlv:"24"`
-	PFD           *pfcpType.PFDContext    `tlv:"59"`
+	ApplicationID pfcpType.ApplicationID `tlv:"24"`
+	PFD           *PFD                   `tlv:"59"`
 }
 
 type PFD struct {
-	PFDContents *pfcpType.PFDContents `tlv:"61"`
+	PFDContents []pfcpType.PFDContents `tlv:"61"`
 }
 
 type PFCPPFDManagementResponse struct {

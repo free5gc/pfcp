@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/bits"
 	"net"
+
+	"free5gc/lib/pfcp/logger"
 )
 
 const (
@@ -77,8 +79,12 @@ func (n *NodeID) ResolveNodeIdToIp() net.IP {
 	case NodeIdTypeIpv4Address, NodeIdTypeIpv6Address:
 		return net.IP(n.NodeIdValue)
 	case NodeIdTypeFqdn:
-		ns, _ := net.LookupHost(string(n.NodeIdValue))
-		return net.ParseIP(ns[0])
+		if ns, err := net.LookupHost(string(n.NodeIdValue)); err != nil {
+			logger.PFCPLog.Warnf("Host lookup failed: %+v", err)
+			return net.IPv4zero
+		} else {
+			return net.ParseIP(ns[0])
+		}
 	default:
 		return net.IPv4zero
 	}

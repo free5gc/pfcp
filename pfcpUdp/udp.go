@@ -20,11 +20,13 @@ type PfcpServer struct {
 	ConsumerTable map[string]pfcp.TxTable
 }
 
-func NewPfcpServer(addr string) (server PfcpServer) {
+func NewPfcpServer(addr string) PfcpServer {
+	var server PfcpServer
+
 	server.Addr = addr
 	server.ConsumerTable = make(map[string]pfcp.TxTable)
 
-	return
+	return server
 }
 
 func (pfcpServer *PfcpServer) Listen() error {
@@ -63,12 +65,14 @@ func (pfcpServer *PfcpServer) ReadFrom(msg *pfcp.Message) (*net.UDPAddr, error) 
 
 		if err != nil {
 			return addr, err
-		}
-
-		if tx != nil {
+		} else if tx != nil {
+			//err == nil && tx != nil => Resend Request
 			err = fmt.Errorf("Receive resend PFCP request")
 			tx.EventChannel <- pfcp.ReceiveResendRequest
 			return addr, err
+		} else {
+			//err == nil && tx == nil => New Request
+			return addr, nil
 		}
 
 	} else if msg.IsResponse() {
@@ -137,7 +141,8 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 	consumerAddr := tx.ConsumerAddr
 	txTable := pfcpServer.ConsumerTable[consumerAddr]
 
-	if tx, exist := txTable[tx.SequenceNumber]; exist {
+	if txTmp, exist := txTable[tx.SequenceNumber]; exist {
+		tx = txTmp
 
 		if tx.TxType == pfcp.SendingRequest {
 			logger.PFCPLog.Infof("Remove Request Transaction [%d]\n", tx.SequenceNumber)
@@ -150,8 +155,8 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 
 		logger.PFCPLog.Warnln("In RemoveTransaction")
 		logger.PFCPLog.Warnln("Consumer IP: ", consumerAddr)
-		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " doesn't exist!")
-		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist\n", tx.SequenceNumber)
+		logger.PFCPLog.Warnln("Sequence number ", txTmp.SequenceNumber, " doesn't exist!")
+		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist\n", txTmp.SequenceNumber)
 	}
 
 	logger.PFCPLog.Traceln("End RemoveTransaction")
@@ -169,7 +174,8 @@ func (pfcpServer *PfcpServer) StartTxLifeCycle(tx *pfcp.Transaction) {
 	}
 }
 
-func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAddr) (tx *pfcp.Transaction, err error) {
+func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAddr) (*pfcp.Transaction, error) {
+	var tx *pfcp.Transaction
 
 	logger.PFCPLog.Traceln("In FindTransaction")
 	consumerAddr := addr.String()
@@ -178,8 +184,7 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
 			logger.PFCPLog.Warnln("In FindTransaction")
 			logger.PFCPLog.Warnf("Can't find txTable from consumer addr: [%s]", consumerAddr)
-			err = fmt.Errorf("FindTransaction Error: txTable not found")
-			return
+			return nil, fmt.Errorf("FindTransaction Error: txTable not found")
 		}
 
 		txTable := pfcpServer.ConsumerTable[consumerAddr]
@@ -189,37 +194,42 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 			logger.PFCPLog.Warnln("In FindTransaction")
 			logger.PFCPLog.Warnln("Consumer Addr: ", consumerAddr)
 			logger.PFCPLog.Warnf("Can't find tx [%d] from txTable: ", seqNum)
-			err = fmt.Errorf("FindTransaction Error: sequence number [%d] not found", seqNum)
-			return
+			return nil, fmt.Errorf("FindTransaction Error: sequence number [%d] not found", seqNum)
 		}
 
 		tx = txTable[seqNum]
 	} else if msg.IsRequest() {
 		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
-			return
+			return nil, nil
 		}
 
 		txTable := pfcpServer.ConsumerTable[consumerAddr]
 		seqNum := msg.Header.SequenceNumber
 
 		if _, exist := txTable[seqNum]; !exist {
-			return
+			return nil, nil
 		}
 
 		tx = txTable[seqNum]
 	}
 	logger.PFCPLog.Traceln("End FindTransaction")
-	return
+	return tx, nil
 
 }
 
 // Send a PFCP message and close UDP connection
 func SendPfcpMessage(msg pfcp.Message, srcAddr *net.UDPAddr, dstAddr *net.UDPAddr) error {
-	conn, err := net.DialUDP("udp", srcAddr, dstAddr)
-	if err != nil {
+	var conn net.Conn
+	if connTmp, err := net.DialUDP("udp", srcAddr, dstAddr); err != nil {
 		return err
+	} else {
+		conn = connTmp
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			logger.PFCPLog.Warnf("Connection close error: %v", err)
+		}
+	}()
 
 	buf, err := msg.Marshal()
 	if err != nil {
@@ -237,11 +247,17 @@ func SendPfcpMessage(msg pfcp.Message, srcAddr *net.UDPAddr, dstAddr *net.UDPAdd
 
 // Receive a PFCP message and close UDP connection
 func ReceivePfcpMessage(msg *pfcp.Message, srcAddr *net.UDPAddr, dstAddr *net.UDPAddr) error {
-	conn, err := net.DialUDP("udp", srcAddr, dstAddr)
-	if err != nil {
+	var conn net.Conn
+	if connTmp, err := net.DialUDP("udp", srcAddr, dstAddr); err != nil {
 		return err
+	} else {
+		conn = connTmp
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			logger.PFCPLog.Warnf("Connection close error: %v", err)
+		}
+	}()
 
 	buf := make([]byte, PFCP_MAX_UDP_LEN)
 	n, err := conn.Read(buf)

@@ -14,12 +14,14 @@ const (
 	SEID_PRESENT     = 1
 )
 
+/*
 var (
 	sequenceCount uint32
 )
+*/
 
 func init() {
-	sequenceCount = 0
+	//sequenceCount = 0
 }
 
 type Header struct {
@@ -37,11 +39,19 @@ func (h *Header) MarshalBinary() (data []byte, err error) {
 	var tmpbuf uint8
 	buffer := new(bytes.Buffer)
 	tmpbuf = h.Version<<5 | (h.MP&1)<<1 | (h.S & 1)
-	_ = binary.Write(buffer, binary.BigEndian, &tmpbuf)
-	_ = binary.Write(buffer, binary.BigEndian, &h.MessageType)
-	_ = binary.Write(buffer, binary.BigEndian, &h.MessageLength)
+	if err := binary.Write(buffer, binary.BigEndian, &tmpbuf); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &h.MessageType); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &h.MessageLength); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
 	if h.S&1 != 0 {
-		_ = binary.Write(buffer, binary.BigEndian, &h.SEID)
+		if err := binary.Write(buffer, binary.BigEndian, &h.SEID); err != nil {
+			logger.PFCPLog.Warnf("Binary write error: %+v", err)
+		}
 	}
 	var snAndSpare uint32
 	var spareAndMP uint8
@@ -55,7 +65,9 @@ func (h *Header) MarshalBinary() (data []byte, err error) {
 	}
 
 	snAndSpare = h.SequenceNumber<<8 | uint32(spareAndMP)
-	_ = binary.Write(buffer, binary.BigEndian, &snAndSpare)
+	if err := binary.Write(buffer, binary.BigEndian, &snAndSpare); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
 	return buffer.Bytes(), nil
 }
 
@@ -66,13 +78,21 @@ func (h *Header) UnmarshalBinary(data []byte) error {
 		return errors.New("")
 	}
 	h.Version, h.MP, h.S = tmpBuf>>5, (tmpBuf&0x02)>>1, tmpBuf&0x01
-	_ = binary.Read(byteReader, binary.BigEndian, &h.MessageType)
-	_ = binary.Read(byteReader, binary.BigEndian, &h.MessageLength)
+	if err := binary.Read(byteReader, binary.BigEndian, &h.MessageType); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
+	if err := binary.Read(byteReader, binary.BigEndian, &h.MessageLength); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
 	if h.S&1 != 0 {
-		_ = binary.Read(byteReader, binary.BigEndian, &h.SEID)
+		if err := binary.Read(byteReader, binary.BigEndian, &h.SEID); err != nil {
+			logger.PFCPLog.Warnf("Binary write error: %+v", err)
+		}
 	}
 	var snAndSpare uint32
-	_ = binary.Read(byteReader, binary.BigEndian, &snAndSpare)
+	if err := binary.Read(byteReader, binary.BigEndian, &snAndSpare); err != nil {
+		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+	}
 
 	h.SequenceNumber = snAndSpare >> 8
 

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"free5gc/lib/pfcp/logger"
 )
 
 // PFDContents - describe in TS 29.244 Figure 8.2.39-1: PFD Contents
@@ -31,27 +33,41 @@ func (p *PFDContents) MarshalBinary() (data []byte, err error) {
 		presenceByte |= BitMask4
 	}
 
-	binary.Write(buf, binary.BigEndian, presenceByte)
-	binary.Write(buf, binary.BigEndian, spareByte)
+	if err := binary.Write(buf, binary.BigEndian, presenceByte); err != nil {
+		logger.PFCPLog.Warnf("presenceByte write failed: %v", err)
+	}
+	if err := binary.Write(buf, binary.BigEndian, spareByte); err != nil {
+		logger.PFCPLog.Warnf("spareByte write failed: %v", err)
+	}
 
 	if p.FlowDescription != "" {
-		binary.Write(buf, binary.BigEndian, uint16(len(p.FlowDescription)))
+		if err := binary.Write(buf, binary.BigEndian, uint16(len(p.FlowDescription))); err != nil {
+			logger.PFCPLog.Warnf("FlowDescription write failed: %v", err)
+		}
 		buf.WriteString(p.FlowDescription)
 	}
 
 	if p.URL != "" {
-		binary.Write(buf, binary.BigEndian, uint16(len(p.URL)))
+		if err := binary.Write(buf, binary.BigEndian, uint16(len(p.URL))); err != nil {
+			logger.PFCPLog.Warnf("URL write failed: %v", err)
+		}
 		buf.WriteString(p.URL)
 	}
 
 	if p.DomainName != "" {
-		binary.Write(buf, binary.BigEndian, uint16(len(p.DomainName)))
+		if err := binary.Write(buf, binary.BigEndian, uint16(len(p.DomainName))); err != nil {
+			logger.PFCPLog.Warnf("DomainName write failed: %v", err)
+		}
 		buf.WriteString(p.DomainName)
 	}
 
 	if p.CustomPFDContent != nil {
-		binary.Write(buf, binary.BigEndian, uint16(len(p.CustomPFDContent)))
-		binary.Write(buf, binary.BigEndian, p.CustomPFDContent)
+		if err := binary.Write(buf, binary.BigEndian, uint16(len(p.CustomPFDContent))); err != nil {
+			logger.PFCPLog.Warnf("CustomPFDContent length write failed: %v", err)
+		}
+		if err := binary.Write(buf, binary.BigEndian, p.CustomPFDContent); err != nil {
+			logger.PFCPLog.Warnf("CustomPFDContent write failed: %v", err)
+		}
 	}
 
 	return buf.Bytes(), nil
@@ -122,13 +138,13 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 			return fmt.Errorf("Inadequate TLV length: %d", length)
 		}
 		custemPFDContentLen := binary.BigEndian.Uint16(data[idx:])
-		idx = idx + 2
+		idx += 2
 
 		if length < idx+custemPFDContentLen {
 			return fmt.Errorf("Inadequate TLV length: %d", length)
 		}
 		p.CustomPFDContent = data[idx : idx+custemPFDContentLen]
-		idx = idx + custemPFDContentLen
+		//idx += custemPFDContentLen
 	}
 
 	return nil

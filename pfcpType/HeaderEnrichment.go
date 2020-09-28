@@ -25,7 +25,8 @@ func (h *HeaderEnrichment) MarshalBinary() (data []byte, err error) {
 
 	// Octet 7 to m
 	if len(h.HeaderFieldName) != int(h.LengthOfHeaderFieldName) {
-		return []byte(""), fmt.Errorf("Unmatch length of header field name: Expect %d, got %d", h.LengthOfHeaderFieldName, len(h.HeaderFieldName))
+		return []byte(""), fmt.Errorf("Unmatch length of header field name: Expect %d, got %d",
+			h.LengthOfHeaderFieldName, len(h.HeaderFieldName))
 	}
 	data = append(data, h.HeaderFieldName...)
 
@@ -34,7 +35,8 @@ func (h *HeaderEnrichment) MarshalBinary() (data []byte, err error) {
 
 	// Octet (p+1) to q
 	if len(h.HeaderFieldValue) != int(h.LengthOfHeaderFieldValue) {
-		return []byte(""), fmt.Errorf("Unmatch length of header field name: Expect %d, got %d", h.LengthOfHeaderFieldValue, len(h.HeaderFieldValue))
+		return []byte(""), fmt.Errorf("Unmatch length of header field name: Expect %d, got %d",
+			h.LengthOfHeaderFieldValue, len(h.HeaderFieldValue))
 	}
 	data = append(data, h.HeaderFieldValue...)
 
