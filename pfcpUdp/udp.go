@@ -184,7 +184,7 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
 			logger.PFCPLog.Warnln("In FindTransaction")
 			logger.PFCPLog.Warnf("Can't find txTable from consumer addr: [%s]", consumerAddr)
-			return nil, fmt.Errorf("FindTransaction Error: txTable not found")
+			return nil, fmt.Errorf("FindTransaction Error: txTable not found in Response MSG.")
 		}
 
 		txTable := pfcpServer.ConsumerTable[consumerAddr]
@@ -200,14 +200,19 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 		tx = txTable[seqNum]
 	} else if msg.IsRequest() {
 		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
-			return nil, nil
+			logger.PFCPLog.Warnln("In FindTransaction")
+			logger.PFCPLog.Warnf("Can't find txTable from consumer addr: [%s]", consumerAddr)
+			return nil, fmt.Errorf("FindTransaction Error: txTable not found in Request MSG.")
 		}
 
 		txTable := pfcpServer.ConsumerTable[consumerAddr]
 		seqNum := msg.Header.SequenceNumber
 
 		if _, exist := txTable[seqNum]; !exist {
-			return nil, nil
+			logger.PFCPLog.Warnln("In FindTransaction")
+			logger.PFCPLog.Warnln("Consumer Addr: ", consumerAddr)
+			logger.PFCPLog.Warnf("Can't find tx [%d] from txTable: ", seqNum)
+			return nil, fmt.Errorf("FindTransaction Error: sequence number [%d] not found", seqNum)
 		}
 
 		tx = txTable[seqNum]
