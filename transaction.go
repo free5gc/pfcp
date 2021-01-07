@@ -3,12 +3,31 @@ package pfcp
 import (
 	"free5gc/lib/pfcp/logger"
 	"net"
+	"sync"
 	"time"
 )
 
 type TransactionType uint8
 
-type TxTable map[uint32]*Transaction
+type TxTable struct {
+	m sync.Map // map[uint32]*Transaction
+}
+
+func (t *TxTable) Store(sequenceNumber uint32, tx *Transaction) {
+	t.m.Store(sequenceNumber, tx)
+}
+
+func (t *TxTable) Load(sequenceNumber uint32) (*Transaction, bool) {
+	tx, ok := t.m.Load(sequenceNumber)
+	if ok {
+		return tx.(*Transaction), ok
+	}
+	return nil, false
+}
+
+func (t *TxTable) Delete(sequenceNumber uint32) {
+	t.m.Delete(sequenceNumber)
+}
 
 const (
 	SendingRequest TransactionType = iota
