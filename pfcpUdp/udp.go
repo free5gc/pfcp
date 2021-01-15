@@ -5,6 +5,7 @@ import (
 	"free5gc/lib/pfcp"
 	"free5gc/lib/pfcp/logger"
 	"net"
+	"sync"
 )
 
 const (
@@ -17,14 +18,33 @@ type PfcpServer struct {
 	Conn *net.UDPConn
 	//Consumer Table
 	//Map Consumer IP to its tx table
-	ConsumerTable map[string]pfcp.TxTable
+	ConsumerTable ConsumerTable
+}
+
+type ConsumerTable struct {
+	m sync.Map
+}
+
+func (t *ConsumerTable) Load(consumerAddr string) (*pfcp.TxTable, bool) {
+	txTable, ok := t.m.Load(consumerAddr)
+	if ok {
+		return txTable.(*pfcp.TxTable), ok
+	}
+	return nil, false
+}
+
+func (t *ConsumerTable) Store(consumerAddr string, txTable *pfcp.TxTable) {
+	t.m.Store(consumerAddr, txTable)
+}
+
+func (t *ConsumerTable) Delete(consumerAddr string) {
+	t.m.Delete(consumerAddr)
 }
 
 func NewPfcpServer(addr string) PfcpServer {
 	var server PfcpServer
 
 	server.Addr = addr
-	server.ConsumerTable = make(map[string]pfcp.TxTable)
 
 	return server
 }
@@ -114,15 +134,15 @@ func (pfcpServer *PfcpServer) PutTransaction(tx *pfcp.Transaction) (err error) {
 	logger.PFCPLog.Traceln("In PutTransaction")
 
 	consumerAddr := tx.ConsumerAddr
-	if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
+	if _, exist := pfcpServer.ConsumerTable.Load(consumerAddr); !exist {
 
-		pfcpServer.ConsumerTable[consumerAddr] = make(pfcp.TxTable)
+		pfcpServer.ConsumerTable.Store(consumerAddr, &pfcp.TxTable{})
 	}
 
-	txTable := pfcpServer.ConsumerTable[consumerAddr]
-	if _, exist := txTable[tx.SequenceNumber]; !exist {
+	txTable, _ := pfcpServer.ConsumerTable.Load(consumerAddr)
+	if _, exist := txTable.Load(tx.SequenceNumber); !exist {
 
-		txTable[tx.SequenceNumber] = tx
+		txTable.Store(tx.SequenceNumber, tx)
 	} else {
 
 		logger.PFCPLog.Warnln("In PutTransaction")
@@ -139,9 +159,9 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 
 	logger.PFCPLog.Traceln("In RemoveTransaction")
 	consumerAddr := tx.ConsumerAddr
-	txTable := pfcpServer.ConsumerTable[consumerAddr]
+	txTable, _ := pfcpServer.ConsumerTable.Load(consumerAddr)
 
-	if txTmp, exist := txTable[tx.SequenceNumber]; exist {
+	if txTmp, exist := txTable.Load(tx.SequenceNumber); exist {
 		tx = txTmp
 
 		if tx.TxType == pfcp.SendingRequest {
@@ -150,13 +170,13 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 			logger.PFCPLog.Infof("Remove Request Transaction [%d]\n", tx.SequenceNumber)
 		}
 
-		delete(txTable, tx.SequenceNumber)
+		txTable.Delete(tx.SequenceNumber)
 	} else {
 
 		logger.PFCPLog.Warnln("In RemoveTransaction")
 		logger.PFCPLog.Warnln("Consumer IP: ", consumerAddr)
-		logger.PFCPLog.Warnln("Sequence number ", txTmp.SequenceNumber, " doesn't exist!")
-		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist\n", txTmp.SequenceNumber)
+		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " doesn't exist!")
+		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist\n", tx.SequenceNumber)
 	}
 
 	logger.PFCPLog.Traceln("End RemoveTransaction")
@@ -181,36 +201,36 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 	consumerAddr := addr.String()
 
 	if msg.IsResponse() {
-		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
+		if _, exist := pfcpServer.ConsumerTable.Load(consumerAddr); !exist {
 			logger.PFCPLog.Warnln("In FindTransaction")
 			logger.PFCPLog.Warnf("Can't find txTable from consumer addr: [%s]", consumerAddr)
 			return nil, fmt.Errorf("FindTransaction Error: txTable not found")
 		}
 
-		txTable := pfcpServer.ConsumerTable[consumerAddr]
+		txTable, _ := pfcpServer.ConsumerTable.Load(consumerAddr)
 		seqNum := msg.Header.SequenceNumber
 
-		if _, exist := txTable[seqNum]; !exist {
+		if _, exist := txTable.Load(seqNum); !exist {
 			logger.PFCPLog.Warnln("In FindTransaction")
 			logger.PFCPLog.Warnln("Consumer Addr: ", consumerAddr)
 			logger.PFCPLog.Warnf("Can't find tx [%d] from txTable: ", seqNum)
 			return nil, fmt.Errorf("FindTransaction Error: sequence number [%d] not found", seqNum)
 		}
 
-		tx = txTable[seqNum]
+		tx, _ = txTable.Load(seqNum)
 	} else if msg.IsRequest() {
-		if _, exist := pfcpServer.ConsumerTable[consumerAddr]; !exist {
+		if _, exist := pfcpServer.ConsumerTable.Load(consumerAddr); !exist {
 			return nil, nil
 		}
 
-		txTable := pfcpServer.ConsumerTable[consumerAddr]
+		txTable, _ := pfcpServer.ConsumerTable.Load(consumerAddr)
 		seqNum := msg.Header.SequenceNumber
 
-		if _, exist := txTable[seqNum]; !exist {
+		if _, exist := txTable.Load(seqNum); !exist {
 			return nil, nil
 		}
 
-		tx = txTable[seqNum]
+		tx, _ = txTable.Load(seqNum)
 	}
 	logger.PFCPLog.Traceln("End FindTransaction")
 	return tx, nil
