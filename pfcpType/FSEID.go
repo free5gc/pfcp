@@ -18,7 +18,7 @@ func (f *FSEID) MarshalBinary() (data []byte, err error) {
 	var idx uint16 = 0
 	// Octet 5
 	tmpUint8 := btou(f.V4)<<1 | btou(f.V6)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 	idx = idx + 1
 
 	// Octet 6 to 13
@@ -56,8 +56,8 @@ func (f *FSEID) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	f.V4 = utob(uint8(data[idx]) & BitMask2)
-	f.V6 = utob(uint8(data[idx]) & BitMask1)
+	f.V4 = utob(data[idx] & BitMask2)
+	f.V6 = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet 6 to 13

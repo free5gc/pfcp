@@ -22,7 +22,7 @@ func (d *DestinationInterface) MarshalBinary() (data []byte, err error) {
 	if bits.Len8(d.InterfaceValue) > 4 {
 		return []byte(""), fmt.Errorf("Interface data shall not be greater than 4 bits binary integer")
 	}
-	data = append([]byte(""), byte(d.InterfaceValue))
+	data = append([]byte(""), d.InterfaceValue)
 
 	return data, nil
 }
@@ -35,7 +35,7 @@ func (d *DestinationInterface) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	d.InterfaceValue = uint8(data[idx]) & Mask4
+	d.InterfaceValue = data[idx] & Mask4
 	idx = idx + 1
 
 	if length != idx {

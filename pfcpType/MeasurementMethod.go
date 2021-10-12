@@ -18,7 +18,7 @@ func (m *MeasurementMethod) MarshalBinary() (data []byte, err error) {
 	tmpUint8 := btou(m.Event)<<2 |
 		btou(m.Volum)<<1 |
 		btou(m.Durat)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	return data, nil
 }
@@ -31,9 +31,9 @@ func (m *MeasurementMethod) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	m.Event = utob(uint8(data[idx]) & BitMask3)
-	m.Volum = utob(uint8(data[idx]) & BitMask2)
-	m.Durat = utob(uint8(data[idx]) & BitMask1)
+	m.Event = utob(data[idx] & BitMask3)
+	m.Volum = utob(data[idx] & BitMask2)
+	m.Durat = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	if !m.Event && !m.Volum && !m.Durat {

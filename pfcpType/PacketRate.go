@@ -27,7 +27,7 @@ type PacketRate struct {
 }
 
 func (p *PacketRate) MarshalBinary() ([]byte, error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if err := buf.WriteByte(btou(p.ULPR)<<0 + btou(p.DLPR)<<1); err != nil {
 		return nil, errors.New("marshal ULPR & DLPR fail: " + err.Error())
@@ -55,7 +55,7 @@ func (p *PacketRate) MarshalBinary() ([]byte, error) {
 }
 
 func (p *PacketRate) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 	var tmpByte byte
 
 	// octet 1

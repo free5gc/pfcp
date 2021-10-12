@@ -11,7 +11,7 @@ type RQI struct {
 }
 
 func (r *RQI) MarshalBinary() ([]byte, error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if err := buf.WriteByte(btou(r.RQI)); err != nil {
 		return nil, fmt.Errorf("marshal RQI fail: " + err.Error())
@@ -21,7 +21,7 @@ func (r *RQI) MarshalBinary() ([]byte, error) {
 }
 
 func (r *RQI) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 	var tmpByte byte
 
 	if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {

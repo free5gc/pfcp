@@ -17,7 +17,7 @@ type OuterHeaderRemoval struct {
 
 func (o *OuterHeaderRemoval) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(o.OuterHeaderRemovalDescription))
+	data = append([]byte(""), o.OuterHeaderRemovalDescription)
 
 	return data, nil
 }
@@ -30,7 +30,7 @@ func (o *OuterHeaderRemoval) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	o.OuterHeaderRemovalDescription = uint8(data[idx])
+	o.OuterHeaderRemovalDescription = data[idx]
 	idx = idx + 1
 
 	if length != idx {

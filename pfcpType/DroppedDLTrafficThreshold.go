@@ -16,7 +16,7 @@ func (d *DroppedDLTrafficThreshold) MarshalBinary() (data []byte, err error) {
 	var idx uint16 = 0
 	// Octet 5
 	tmpUint8 := btou(d.Dlby)<<1 | btou(d.Dlpa)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 	idx = idx + 1
 
 	// Octet m to (m+7)
@@ -43,8 +43,8 @@ func (d *DroppedDLTrafficThreshold) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	d.Dlby = utob(uint8(data[idx]) & BitMask2)
-	d.Dlpa = utob(uint8(data[idx]) & BitMask1)
+	d.Dlby = utob(data[idx] & BitMask2)
+	d.Dlpa = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet m to (m+7)

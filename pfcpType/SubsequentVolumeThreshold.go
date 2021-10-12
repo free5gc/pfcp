@@ -20,7 +20,7 @@ func (s *SubsequentVolumeThreshold) MarshalBinary() (data []byte, err error) {
 	tmpUint8 := btou(s.Dlvol)<<2 |
 		btou(s.Ulvol)<<1 |
 		btou(s.Tovol)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 	idx = idx + 1
 
 	// Octet m to (m+7)
@@ -54,9 +54,9 @@ func (s *SubsequentVolumeThreshold) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	s.Dlvol = utob(uint8(data[idx]) & BitMask3)
-	s.Ulvol = utob(uint8(data[idx]) & BitMask2)
-	s.Tovol = utob(uint8(data[idx]) & BitMask1)
+	s.Dlvol = utob(data[idx] & BitMask3)
+	s.Ulvol = utob(data[idx] & BitMask2)
+	s.Tovol = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet m to (m+7)

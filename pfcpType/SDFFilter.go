@@ -27,7 +27,7 @@ func (s *SDFFilter) MarshalBinary() (data []byte, err error) {
 		btou(s.Spi)<<2 |
 		btou(s.Ttc)<<1 |
 		btou(s.Fd)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 	idx = idx + 1
 
 	// Octet 6 (spare)
@@ -96,11 +96,11 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	s.Bid = utob(uint8(data[idx]) & BitMask5)
-	s.Fl = utob(uint8(data[idx]) & BitMask4)
-	s.Spi = utob(uint8(data[idx]) & BitMask3)
-	s.Ttc = utob(uint8(data[idx]) & BitMask2)
-	s.Fd = utob(uint8(data[idx]) & BitMask1)
+	s.Bid = utob(data[idx] & BitMask5)
+	s.Fl = utob(data[idx] & BitMask4)
+	s.Spi = utob(data[idx] & BitMask3)
+	s.Ttc = utob(data[idx] & BitMask2)
+	s.Fd = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet 6 (spare)

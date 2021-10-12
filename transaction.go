@@ -77,7 +77,6 @@ func NewTransaction(pfcpMSG Message, binaryMSG []byte, Conn *net.UDPConn, DestAd
 }
 
 func (transaction *Transaction) Start() {
-
 	logger.PFCPLog.Tracef("Start Transaction [%d]\n", transaction.SequenceNumber)
 
 	if transaction.TxType == SendingRequest {
@@ -85,7 +84,6 @@ func (transaction *Transaction) Start() {
 			timer := time.NewTimer(ResendRequestTimeOutPeriod * time.Second)
 
 			_, err := transaction.Conn.WriteToUDP(transaction.SendMsg, transaction.DestAddr)
-
 			if err != nil {
 				logger.PFCPLog.Warnf("Request Transaction [%d]: %s\n", transaction.SequenceNumber, err)
 				return
@@ -105,12 +103,10 @@ func (transaction *Transaction) Start() {
 			}
 		}
 	} else if transaction.TxType == SendingResponse {
-		//Todo :Implement SendingResponse type of reliable delivery
+		// Todo :Implement SendingResponse type of reliable delivery
 		timer := time.NewTimer(ResendResponseTimeOutPeriod * time.Second)
 		for iter := 0; iter < NumOfResend; iter++ {
-
 			_, err := transaction.Conn.WriteToUDP(transaction.SendMsg, transaction.DestAddr)
-
 			if err != nil {
 				logger.PFCPLog.Warnf("Response Transaction [%d]: sending error\n", transaction.SequenceNumber)
 				return
@@ -129,7 +125,5 @@ func (transaction *Transaction) Start() {
 				return
 			}
 		}
-
 	}
-
 }

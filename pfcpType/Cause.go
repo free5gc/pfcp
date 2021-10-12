@@ -33,7 +33,7 @@ type Cause struct {
 
 func (c *Cause) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(c.CauseValue))
+	data = append([]byte(""), c.CauseValue)
 
 	return data, nil
 }
@@ -46,7 +46,7 @@ func (c *Cause) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	c.CauseValue = uint8(data[idx])
+	c.CauseValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {

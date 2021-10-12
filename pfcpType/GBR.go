@@ -13,7 +13,7 @@ type GBR struct {
 }
 
 func (g *GBR) MarshalBinary() ([]byte, error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if bits.Len64(g.ULGBR) > 40 {
 		return nil, fmt.Errorf("UL GBR shall not be greater than 40 bits binary integer")
@@ -22,7 +22,7 @@ func (g *GBR) MarshalBinary() ([]byte, error) {
 		return nil, fmt.Errorf("DL GBR shall not be greater than 40 bits binary integer")
 	}
 
-	var gbrBytes = make([]byte, 8)
+	gbrBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(gbrBytes, g.ULGBR)
 
 	if err := binary.Write(buf, binary.BigEndian, gbrBytes[3:]); err != nil {
@@ -39,10 +39,10 @@ func (g *GBR) MarshalBinary() ([]byte, error) {
 }
 
 func (g *GBR) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 
-	var GBRBytes = make([]byte, 5)
-	var uint64Byte = make([]byte, 8)
+	GBRBytes := make([]byte, 5)
+	uint64Byte := make([]byte, 8)
 
 	if err := binary.Read(buf, binary.BigEndian, GBRBytes); err != nil {
 		return fmt.Errorf("read UL GBR fail: %s", err)

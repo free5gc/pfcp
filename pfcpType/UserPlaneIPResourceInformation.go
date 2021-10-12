@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/free5gc/pfcp/logger"
-	"github.com/free5gc/util_3gpp"
 )
 
 type UserPlaneIPResourceInformation struct {
@@ -18,7 +17,7 @@ type UserPlaneIPResourceInformation struct {
 	TeidRange       uint8
 	Ipv4Address     net.IP
 	Ipv6Address     net.IP
-	NetworkInstance util_3gpp.Dnn
+	NetworkInstance NetworkInstance
 	SourceInterface uint8 // 0x00001111
 }
 
@@ -32,11 +31,11 @@ func (u *UserPlaneIPResourceInformation) MarshalBinary() (data []byte, err error
 		u.Teidri<<2 |
 		btou(u.V6)<<1 |
 		btou(u.V4)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	// Octet 6
 	if u.Teidri != 0 {
-		data = append(data, byte(u.TeidRange))
+		data = append(data, u.TeidRange)
 	}
 
 	// Octet m to (m+3)
@@ -73,7 +72,7 @@ func (u *UserPlaneIPResourceInformation) MarshalBinary() (data []byte, err error
 		if bits.Len8(u.SourceInterface) > 4 {
 			return []byte(""), fmt.Errorf("Source interface shall not be greater than 4 bits binary integer")
 		}
-		data = append(data, byte(u.SourceInterface))
+		data = append(data, u.SourceInterface)
 	}
 
 	return data, nil
@@ -87,11 +86,11 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	u.Assosi = utob(uint8(data[idx]) & BitMask7)
-	u.Assoni = utob(uint8(data[idx]) & BitMask6)
-	u.Teidri = uint8(data[idx]) >> 2 & Mask3
-	u.V6 = utob(uint8(data[idx]) & BitMask2)
-	u.V4 = utob(uint8(data[idx]) & BitMask1)
+	u.Assosi = utob(data[idx] & BitMask7)
+	u.Assoni = utob(data[idx] & BitMask6)
+	u.Teidri = data[idx] >> 2 & Mask3
+	u.V6 = utob(data[idx] & BitMask2)
+	u.V4 = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet 6
@@ -99,7 +98,7 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 		if length < idx+1 {
 			return fmt.Errorf("Inadequate TLV length: %d", length)
 		}
-		u.TeidRange = uint8(data[idx])
+		u.TeidRange = data[idx]
 		idx = idx + 1
 	}
 

@@ -10,7 +10,7 @@ type BARID struct {
 
 func (b *BARID) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(b.BarIdValue))
+	data = append([]byte(""), b.BarIdValue)
 
 	return data, nil
 }
@@ -23,7 +23,7 @@ func (b *BARID) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	b.BarIdValue = uint8(data[idx])
+	b.BarIdValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {

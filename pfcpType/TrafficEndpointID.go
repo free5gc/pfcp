@@ -10,7 +10,7 @@ type TrafficEndpointID struct {
 
 func (t *TrafficEndpointID) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(t.TrafficEndpointIdValue))
+	data = append([]byte(""), t.TrafficEndpointIdValue)
 
 	return data, nil
 }
@@ -23,7 +23,7 @@ func (t *TrafficEndpointID) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	t.TrafficEndpointIdValue = uint8(data[idx])
+	t.TrafficEndpointIdValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {

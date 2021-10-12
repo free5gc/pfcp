@@ -7,7 +7,7 @@ import (
 )
 
 func TestGBRMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name string
 		gbr  GBR
 		buf  []byte

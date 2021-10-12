@@ -15,7 +15,7 @@ type CPFunctionFeatures struct {
 
 func (c *CPFunctionFeatures) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(c.SupportedFeatures))
+	data = append([]byte(""), c.SupportedFeatures)
 
 	return data, nil
 }
@@ -28,7 +28,7 @@ func (c *CPFunctionFeatures) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	c.SupportedFeatures = uint8(data[idx])
+	c.SupportedFeatures = data[idx]
 	idx = idx + 1
 
 	if length != idx {

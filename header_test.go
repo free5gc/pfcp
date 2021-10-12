@@ -1,12 +1,10 @@
-package pfcp_test
+package pfcp
 
 import (
 	"encoding/hex"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/free5gc/pfcp"
 )
 
 const (
@@ -14,19 +12,19 @@ const (
 	SessionRelatedHeaderHex = "233400000000000000000001000000F0"
 )
 
-var NodeRelatedHeader = pfcp.Header{
+var NodeRelatedHeader = Header{
 	Version:        1,
 	S:              0,
-	MessageType:    pfcp.PFCP_ASSOCIATION_SETUP_REQUEST,
+	MessageType:    PFCP_ASSOCIATION_SETUP_REQUEST,
 	MessageLength:  0,
 	SequenceNumber: 1,
 }
 
-var SessionRelatedHeader = pfcp.Header{
+var SessionRelatedHeader = Header{
 	Version:         1,
 	MP:              1,
 	S:               1,
-	MessageType:     pfcp.PFCP_SESSION_MODIFICATION_REQUEST,
+	MessageType:     PFCP_SESSION_MODIFICATION_REQUEST,
 	MessageLength:   0,
 	SEID:            1,
 	SequenceNumber:  0,
@@ -49,7 +47,7 @@ func TestPFCPHeader_MarshalBinary(t *testing.T) {
 }
 
 func TestPFCPHeader_UnmarshalBinary(t *testing.T) {
-	var tmpHeader pfcp.Header
+	var tmpHeader Header
 	var payload []byte
 
 	// Test PFCP Header for Node Related Messages

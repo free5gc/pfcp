@@ -22,7 +22,7 @@ func (p *PDNType) MarshalBinary() (data []byte, err error) {
 	if bits.Len8(p.PdnType) > 3 {
 		return []byte(""), fmt.Errorf("PDN type shall not be greater than 3 bits binary integer")
 	}
-	data = append([]byte(""), byte(p.PdnType))
+	data = append([]byte(""), p.PdnType)
 
 	return data, nil
 }
@@ -35,7 +35,7 @@ func (p *PDNType) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	p.PdnType = uint8(data[idx]) & Mask3
+	p.PdnType = data[idx] & Mask3
 	idx = idx + 1
 
 	if length != idx {

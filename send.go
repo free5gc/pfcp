@@ -14,7 +14,6 @@ const (
 )
 
 func ReceiveNode(seq int) {
-
 }
 
 type Node struct {

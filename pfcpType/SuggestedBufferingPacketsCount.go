@@ -10,7 +10,7 @@ type SuggestedBufferingPacketsCount struct {
 
 func (s *SuggestedBufferingPacketsCount) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(s.PacketCountValue))
+	data = append([]byte(""), s.PacketCountValue)
 
 	return data, nil
 }
@@ -23,7 +23,7 @@ func (s *SuggestedBufferingPacketsCount) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	s.PacketCountValue = uint8(data[idx])
+	s.PacketCountValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {

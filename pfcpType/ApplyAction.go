@@ -19,7 +19,7 @@ func (a *ApplyAction) MarshalBinary() (data []byte, err error) {
 		btou(a.Buff)<<2 |
 		btou(a.Forw)<<1 |
 		btou(a.Drop)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	return data, nil
 }
@@ -32,11 +32,11 @@ func (a *ApplyAction) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	a.Dupl = utob(uint8(data[idx]) & BitMask5)
-	a.Nocp = utob(uint8(data[idx]) & BitMask4)
-	a.Buff = utob(uint8(data[idx]) & BitMask3)
-	a.Forw = utob(uint8(data[idx]) & BitMask2)
-	a.Drop = utob(uint8(data[idx]) & BitMask1)
+	a.Dupl = utob(data[idx] & BitMask5)
+	a.Nocp = utob(data[idx] & BitMask4)
+	a.Buff = utob(data[idx] & BitMask3)
+	a.Forw = utob(data[idx] & BitMask2)
+	a.Drop = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	if length != idx {

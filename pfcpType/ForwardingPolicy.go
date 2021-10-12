@@ -11,7 +11,7 @@ type ForwardingPolicy struct {
 
 func (f *ForwardingPolicy) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(f.ForwardingPolicyIdentifierLength))
+	data = append([]byte(""), f.ForwardingPolicyIdentifierLength)
 
 	// Octet 6 to (6+a)
 	if len(f.ForwardingPolicyIdentifier) != int(f.ForwardingPolicyIdentifierLength) {
@@ -31,7 +31,7 @@ func (f *ForwardingPolicy) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	f.ForwardingPolicyIdentifierLength = uint8(data[idx])
+	f.ForwardingPolicyIdentifierLength = data[idx]
 	idx = idx + 1
 
 	// Octet 6 to (6+a)

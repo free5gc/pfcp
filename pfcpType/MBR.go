@@ -13,7 +13,7 @@ type MBR struct {
 }
 
 func (m *MBR) MarshalBinary() (data []byte, err error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if bits.Len64(m.ULMBR) > 40 {
 		return nil, fmt.Errorf("UL MBR shall not be greater than 40 bits binary integer")
@@ -22,7 +22,7 @@ func (m *MBR) MarshalBinary() (data []byte, err error) {
 		return nil, fmt.Errorf("DL MBR shall not be greater than 40 bits binary integer")
 	}
 
-	var gbrBytes = make([]byte, 8)
+	gbrBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(gbrBytes, m.ULMBR)
 
 	if err := binary.Write(buf, binary.BigEndian, gbrBytes[3:]); err != nil {
@@ -39,10 +39,10 @@ func (m *MBR) MarshalBinary() (data []byte, err error) {
 }
 
 func (m *MBR) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 
-	var MBRBytes = make([]byte, 5)
-	var uint64Byte = make([]byte, 8)
+	MBRBytes := make([]byte, 5)
+	uint64Byte := make([]byte, 8)
 
 	if err := binary.Read(buf, binary.BigEndian, MBRBytes); err != nil {
 		return fmt.Errorf("read UL MBR fail: %s", err)

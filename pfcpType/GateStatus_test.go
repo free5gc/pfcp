@@ -7,7 +7,7 @@ import (
 )
 
 func TestGateStatusMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name       string
 		gateStatus GateStatus
 		buf        []byte

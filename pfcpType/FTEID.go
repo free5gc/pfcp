@@ -24,7 +24,7 @@ func (f *FTEID) MarshalBinary() (data []byte, err error) {
 		btou(f.Ch)<<2 |
 		btou(f.V6)<<1 |
 		btou(f.V4)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 	idx = idx + 1
 
 	if !f.Ch {
@@ -54,7 +54,7 @@ func (f *FTEID) MarshalBinary() (data []byte, err error) {
 	} else {
 		// Octet q
 		if f.Chid {
-			data = append(data, byte(f.ChooseId))
+			data = append(data, f.ChooseId)
 		}
 	}
 
@@ -69,10 +69,10 @@ func (f *FTEID) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	f.Chid = utob(uint8(data[idx]) & BitMask4)
-	f.Ch = utob(uint8(data[idx]) & BitMask3)
-	f.V6 = utob(uint8(data[idx]) & BitMask2)
-	f.V4 = utob(uint8(data[idx]) & BitMask1)
+	f.Chid = utob(data[idx] & BitMask4)
+	f.Ch = utob(data[idx] & BitMask3)
+	f.V6 = utob(data[idx] & BitMask2)
+	f.V4 = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	if !f.Ch {
@@ -110,7 +110,7 @@ func (f *FTEID) UnmarshalBinary(data []byte) error {
 			if length < idx+1 {
 				return fmt.Errorf("Inadequate TLV length: %d", length)
 			}
-			f.ChooseId = uint8(data[idx])
+			f.ChooseId = data[idx]
 			idx = idx + 1
 		}
 	}

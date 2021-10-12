@@ -18,10 +18,10 @@ func (h *HeaderEnrichment) MarshalBinary() (data []byte, err error) {
 	if bits.Len8(h.HeaderType) > 5 {
 		return []byte(""), fmt.Errorf("Header type shall not be greater than 5 bits binary integer")
 	}
-	data = append([]byte(""), byte(h.HeaderType))
+	data = append([]byte(""), h.HeaderType)
 
 	// Octet 6
-	data = append(data, byte(h.LengthOfHeaderFieldName))
+	data = append(data, h.LengthOfHeaderFieldName)
 
 	// Octet 7 to m
 	if len(h.HeaderFieldName) != int(h.LengthOfHeaderFieldName) {
@@ -31,7 +31,7 @@ func (h *HeaderEnrichment) MarshalBinary() (data []byte, err error) {
 	data = append(data, h.HeaderFieldName...)
 
 	// Octet p
-	data = append(data, byte(h.LengthOfHeaderFieldValue))
+	data = append(data, h.LengthOfHeaderFieldValue)
 
 	// Octet (p+1) to q
 	if len(h.HeaderFieldValue) != int(h.LengthOfHeaderFieldValue) {
@@ -51,7 +51,7 @@ func (h *HeaderEnrichment) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	h.HeaderType = uint8(data[idx]) & Mask5
+	h.HeaderType = data[idx] & Mask5
 	idx = idx + 1
 
 	// Octet 6

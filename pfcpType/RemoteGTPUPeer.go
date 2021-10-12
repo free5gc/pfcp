@@ -15,7 +15,7 @@ type RemoteGTPUPeer struct {
 func (r *RemoteGTPUPeer) MarshalBinary() (data []byte, err error) {
 	// Octet 5
 	tmpUint8 := btou(r.V4)<<1 | btou(r.V6)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	// Octet m to (m+3)
 	if r.V4 {
@@ -48,8 +48,8 @@ func (r *RemoteGTPUPeer) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	r.V4 = utob(uint8(data[idx]) & BitMask2)
-	r.V6 = utob(uint8(data[idx]) & BitMask1)
+	r.V4 = utob(data[idx] & BitMask2)
+	r.V6 = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	// Octet m to (m+3)

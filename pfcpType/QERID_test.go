@@ -7,7 +7,7 @@ import (
 )
 
 func TestQERIDMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name  string
 		qerID QERID
 		buf   []byte

@@ -19,7 +19,7 @@ func (d *DLBufferingDuration) MarshalBinary() (data []byte, err error) {
 		return []byte(""), fmt.Errorf("Timer data shall not be greater than 5 bits binary integer")
 	}
 	tmpUint8 := d.TimerUnit<<5 | d.TimerValue
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	return data, nil
 }
@@ -32,8 +32,8 @@ func (d *DLBufferingDuration) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	d.TimerUnit = uint8(data[idx]) >> 5 & Mask3
-	d.TimerValue = uint8(data[idx]) & Mask5
+	d.TimerUnit = data[idx] >> 5 & Mask3
+	d.TimerValue = data[idx] & Mask5
 	idx = idx + 1
 
 	if length != idx {

@@ -22,7 +22,7 @@ var (
 */
 
 func init() {
-	//sequenceCount = 0
+	// sequenceCount = 0
 }
 
 type Header struct {

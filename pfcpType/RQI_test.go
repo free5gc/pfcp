@@ -7,7 +7,7 @@ import (
 )
 
 func TestRQIMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name string
 		rqi  RQI
 		buf  []byte

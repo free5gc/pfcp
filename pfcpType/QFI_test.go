@@ -7,7 +7,7 @@ import (
 )
 
 func TestQFIMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name string
 		qfi  QFI
 		buf  []byte

@@ -17,8 +17,8 @@ const (
 type PfcpServer struct {
 	Addr string
 	Conn *net.UDPConn
-	//Consumer Table
-	//Map Consumer IP to its tx table
+	// Consumer Table
+	// Map Consumer IP to its tx table
 	ConsumerTable ConsumerTable
 }
 
@@ -78,17 +78,17 @@ func (pfcpServer *PfcpServer) ReadFrom(msg *pfcp.Message) (*net.UDPAddr, error) 
 	}
 
 	if msg.IsRequest() {
-		//Todo: Implement SendingResponse type of reliable delivery
+		// Todo: Implement SendingResponse type of reliable delivery
 		tx, err := pfcpServer.FindTransaction(msg, addr)
 		if err != nil {
 			return addr, err
 		} else if tx != nil {
-			//err == nil && tx != nil => Resend Request
+			// err == nil && tx != nil => Resend Request
 			err = fmt.Errorf("Receive resend PFCP request")
 			tx.EventChannel <- pfcp.ReceiveResendRequest
 			return addr, err
 		} else {
-			//err == nil && tx == nil => New Request
+			// err == nil && tx == nil => New Request
 			return addr, nil
 		}
 	} else if msg.IsResponse() {
@@ -137,7 +137,6 @@ func (pfcpServer *PfcpServer) PutTransaction(tx *pfcp.Transaction) (err error) {
 	if _, exist := txTable.Load(tx.SequenceNumber); !exist {
 		txTable.Store(tx.SequenceNumber, tx)
 	} else {
-
 		logger.PFCPLog.Warnln("In PutTransaction")
 		logger.PFCPLog.Warnln("Consumer Addr: ", consumerAddr)
 		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " already exist!")
@@ -149,7 +148,6 @@ func (pfcpServer *PfcpServer) PutTransaction(tx *pfcp.Transaction) (err error) {
 }
 
 func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error) {
-
 	logger.PFCPLog.Traceln("In RemoveTransaction")
 	consumerAddr := tx.ConsumerAddr
 	txTable, _ := pfcpServer.ConsumerTable.Load(consumerAddr)
@@ -175,10 +173,10 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 }
 
 func (pfcpServer *PfcpServer) StartTxLifeCycle(tx *pfcp.Transaction) {
-	//Start Transaction
+	// Start Transaction
 	tx.Start()
 
-	//End Transaction
+	// End Transaction
 	err := pfcpServer.RemoveTransaction(tx)
 	if err != nil {
 		logger.PFCPLog.Warnln(err)
@@ -225,7 +223,6 @@ func (pfcpServer *PfcpServer) FindTransaction(msg *pfcp.Message, addr *net.UDPAd
 	}
 	logger.PFCPLog.Traceln("End FindTransaction")
 	return tx, nil
-
 }
 
 // Send a PFCP message and close UDP connection

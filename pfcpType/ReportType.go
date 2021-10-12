@@ -17,7 +17,7 @@ func (r *ReportType) MarshalBinary() (data []byte, err error) {
 		btou(r.Erir)<<2 |
 		btou(r.Usar)<<1 |
 		btou(r.Dldr)
-	data = append([]byte(""), byte(tmpUint8))
+	data = append([]byte(""), tmpUint8)
 
 	return data, nil
 }
@@ -30,10 +30,10 @@ func (r *ReportType) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	r.Upir = utob(uint8(data[idx]) & BitMask4)
-	r.Erir = utob(uint8(data[idx]) & BitMask3)
-	r.Usar = utob(uint8(data[idx]) & BitMask2)
-	r.Dldr = utob(uint8(data[idx]) & BitMask1)
+	r.Upir = utob(data[idx] & BitMask4)
+	r.Erir = utob(data[idx] & BitMask3)
+	r.Usar = utob(data[idx] & BitMask2)
+	r.Dldr = utob(data[idx] & BitMask1)
 	idx = idx + 1
 
 	if length != idx {

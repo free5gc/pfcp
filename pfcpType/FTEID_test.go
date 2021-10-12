@@ -1,9 +1,10 @@
 package pfcpType
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshalFTEID(t *testing.T) {

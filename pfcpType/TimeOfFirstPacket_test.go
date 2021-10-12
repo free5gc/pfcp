@@ -1,9 +1,10 @@
 package pfcpType
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshalTimeOfFirstPacket(t *testing.T) {

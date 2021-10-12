@@ -1,4 +1,4 @@
-package pfcp_test
+package pfcp
 
 import (
 	"net"
@@ -6,34 +6,32 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/free5gc/pfcp"
 	"github.com/free5gc/pfcp/pfcpType"
 )
 
 func TestUnmarshal(t *testing.T) {
-
-	var testCases = []struct {
+	testCases := []struct {
 		name            string
-		expectedMessage pfcp.Message
+		expectedMessage Message
 		inputBuf        []byte
 	}{
 		{
 			name: "Association Setup Request",
-			expectedMessage: pfcp.Message{
-				Header: pfcp.Header{
+			expectedMessage: Message{
+				Header: Header{
 					Version:         1,
 					MP:              0,
 					S:               0,
-					MessageType:     pfcp.PFCP_ASSOCIATION_SETUP_REQUEST,
+					MessageType:     PFCP_ASSOCIATION_SETUP_REQUEST,
 					MessageLength:   13,
 					SEID:            0,
 					SequenceNumber:  1,
 					MessagePriority: 0,
 				},
-				Body: pfcp.PFCPAssociationSetupRequest{
+				Body: PFCPAssociationSetupRequest{
 					NodeID: &pfcpType.NodeID{
-						NodeIdType:  0,
-						NodeIdValue: net.ParseIP("192.188.2.2").To4(),
+						NodeIdType: 0,
+						IP:         net.ParseIP("192.188.2.2").To4(),
 					},
 				},
 			},
@@ -41,23 +39,23 @@ func TestUnmarshal(t *testing.T) {
 		},
 		{
 			name: "Session Establishment Request",
-			expectedMessage: pfcp.Message{
-				Header: pfcp.Header{
+			expectedMessage: Message{
+				Header: Header{
 					Version:         1,
 					MP:              0,
 					S:               1,
-					MessageType:     pfcp.PFCP_SESSION_ESTABLISHMENT_REQUEST,
+					MessageType:     PFCP_SESSION_ESTABLISHMENT_REQUEST,
 					MessageLength:   44,
 					SEID:            0x02,
 					SequenceNumber:  1,
 					MessagePriority: 0,
 				},
-				Body: pfcp.PFCPSessionEstablishmentRequest{
+				Body: PFCPSessionEstablishmentRequest{
 					NodeID: &pfcpType.NodeID{
-						NodeIdType:  0,
-						NodeIdValue: net.ParseIP("192.188.2.2").To4(),
+						NodeIdType: 0,
+						IP:         net.ParseIP("192.188.2.2").To4(),
 					},
-					CreatePDR: []*pfcp.CreatePDR{
+					CreatePDR: []*CreatePDR{
 						{
 							PDRID:              &pfcpType.PacketDetectionRuleID{RuleId: 1},
 							Precedence:         &pfcpType.Precedence{PrecedenceValue: 32},
@@ -71,7 +69,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var msg pfcp.Message
+			var msg Message
 			err := msg.Unmarshal(tc.inputBuf)
 			require.Nilf(t, err, "decode %s failed", tc.name)
 			require.Equal(t, tc.expectedMessage, msg)

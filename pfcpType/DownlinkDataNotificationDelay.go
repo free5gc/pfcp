@@ -10,7 +10,7 @@ type DownlinkDataNotificationDelay struct {
 
 func (d *DownlinkDataNotificationDelay) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	data = append([]byte(""), byte(d.DelayValue))
+	data = append([]byte(""), d.DelayValue)
 
 	return data, nil
 }
@@ -23,7 +23,7 @@ func (d *DownlinkDataNotificationDelay) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	d.DelayValue = uint8(data[idx])
+	d.DelayValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {

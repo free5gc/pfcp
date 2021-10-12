@@ -1,6 +1,9 @@
 package pfcpType
 
 import (
+	"bytes"
+	"errors"
+	"strings"
 	"time"
 )
 
@@ -37,4 +40,38 @@ func btou(b bool) uint8 {
 
 func utob(u uint8) bool {
 	return u != 0
+}
+
+func fqdnToRfc1035(fqdn string) ([]byte, error) {
+	var rfc1035RR []byte
+	domainSegments := strings.Split(fqdn, ".")
+
+	for _, segment := range domainSegments {
+		if len(segment) > 63 {
+			return nil, errors.New("fqdn limit the label to 63 octets or less")
+		}
+		rfc1035RR = append(rfc1035RR, uint8(len(segment)))
+		rfc1035RR = append(rfc1035RR, segment...)
+	}
+
+	if len(rfc1035RR) > 255 {
+		return nil, errors.New("fqdn should less then 255 octet")
+	}
+	return rfc1035RR, nil
+}
+
+func rfc1035tofqdn(rfc1035RR []byte) string {
+	rfc1035Reader := bytes.NewBuffer(rfc1035RR)
+	fqdn := ""
+
+	for {
+		// length of label
+		if labelLen, err := rfc1035Reader.ReadByte(); err != nil {
+			break
+		} else {
+			fqdn += string(rfc1035Reader.Next(int(labelLen))) + "."
+		}
+	}
+
+	return fqdn[0 : len(fqdn)-1]
 }

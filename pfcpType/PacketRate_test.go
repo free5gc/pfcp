@@ -7,7 +7,7 @@ import (
 )
 
 func TestPacketRateMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name       string
 		packetRate PacketRate
 		buf        []byte

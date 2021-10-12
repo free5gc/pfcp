@@ -83,7 +83,7 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
 
-	var presenceByte = data[idx]
+	presenceByte := data[idx]
 	// presenceByte & spareByte
 	idx = idx + 2
 
@@ -144,7 +144,7 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 			return fmt.Errorf("Inadequate TLV length: %d", length)
 		}
 		p.CustomPFDContent = data[idx : idx+custemPFDContentLen]
-		//idx += custemPFDContentLen
+		// idx += custemPFDContentLen
 	}
 
 	return nil

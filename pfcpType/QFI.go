@@ -11,7 +11,7 @@ type QFI struct {
 }
 
 func (q *QFI) MarshalBinary() ([]byte, error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if q.QFI > 63 {
 		return nil, fmt.Errorf("QFI should be less equal than 63")
@@ -25,7 +25,7 @@ func (q *QFI) MarshalBinary() ([]byte, error) {
 }
 
 func (q *QFI) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 
 	if err := binary.Read(buf, binary.BigEndian, &q.QFI); err != nil {
 		return fmt.Errorf("unmarshal QFI fail: " + err.Error())

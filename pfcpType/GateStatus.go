@@ -17,7 +17,7 @@ type GateStatus struct {
 }
 
 func (g *GateStatus) MarshalBinary() ([]byte, error) {
-	var buf = &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
 	if g.ULGate > 1 {
 		return nil, fmt.Errorf("UL Gate shall be 0 or 1")
@@ -35,7 +35,7 @@ func (g *GateStatus) MarshalBinary() ([]byte, error) {
 }
 
 func (g *GateStatus) UnmarshalBinary(data []byte) error {
-	var buf = bytes.NewBuffer(data)
+	buf := bytes.NewBuffer(data)
 	var tmpByte byte
 
 	if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {

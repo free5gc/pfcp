@@ -15,7 +15,7 @@ func (f *FailedRuleID) MarshalBinary() (data []byte, err error) {
 	if bits.Len8(f.RuleIdType) > 4 {
 		return []byte(""), fmt.Errorf("Rule ID type shall not be greater than 4 bits binary integer")
 	}
-	data = append([]byte(""), byte(f.RuleIdType))
+	data = append([]byte(""), f.RuleIdType)
 
 	// Octet 6 to p
 	data = append(data, f.RuleIdValue...)
@@ -31,7 +31,7 @@ func (f *FailedRuleID) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	f.RuleIdType = uint8(data[idx]) & Mask4
+	f.RuleIdType = data[idx] & Mask4
 	idx = idx + 1
 
 	// Octet 6 to p

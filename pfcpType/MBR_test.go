@@ -7,7 +7,7 @@ import (
 )
 
 func TestMBRMarshalUnmarshal(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name string
 		mbr  MBR
 		buf  []byte

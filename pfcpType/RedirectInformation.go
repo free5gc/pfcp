@@ -18,7 +18,7 @@ func (r *RedirectInformation) MarshalBinary() (data []byte, err error) {
 	if bits.Len8(r.RedirectAddressType) > 4 {
 		return []byte(""), fmt.Errorf("Redirect address type shall not be greater than 4 bits binary integer")
 	}
-	data = append([]byte(""), byte(r.RedirectAddressType))
+	data = append([]byte(""), r.RedirectAddressType)
 	idx = idx + 1
 
 	// Octet 6 to 7
@@ -43,7 +43,7 @@ func (r *RedirectInformation) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
-	r.RedirectAddressType = uint8(data[idx]) & Mask4
+	r.RedirectAddressType = data[idx] & Mask4
 	idx = idx + 1
 
 	// Octet 6 to 7
