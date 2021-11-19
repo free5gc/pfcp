@@ -11,9 +11,13 @@ type Message struct {
 	PfcpMessage *pfcp.Message
 }
 
-func NewMessage(remoteAddr *net.UDPAddr, pfcpMessage *pfcp.Message) (msg Message) {
-	msg = Message{}
-	msg.RemoteAddr = remoteAddr
-	msg.PfcpMessage = pfcpMessage
-	return
+func NewMessage(remoteAddr *net.UDPAddr, pfcpMessage *pfcp.Message) (msg *Message) {
+	return &Message{
+		RemoteAddr:  remoteAddr,
+		PfcpMessage: pfcpMessage,
+	}
+}
+
+func (m *Message) MessageType() pfcp.MessageType {
+	return m.PfcpMessage.Header.MessageType
 }
