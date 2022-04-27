@@ -1,6 +1,7 @@
 package pfcpUdp
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"sync"
@@ -13,6 +14,8 @@ const (
 	PFCP_PORT        = 8805
 	PFCP_MAX_UDP_LEN = 2048
 )
+
+var ErrReceivedResentRequest = errors.New("received a request that is re-sent")
 
 type PfcpServer struct {
 	Addr string
@@ -65,60 +68,96 @@ func (pfcpServer *PfcpServer) Listen() error {
 	return err
 }
 
-func (pfcpServer *PfcpServer) ReadFrom(msg *pfcp.Message) (*net.UDPAddr, error) {
+func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
 	buf := make([]byte, PFCP_MAX_UDP_LEN)
 	n, addr, err := pfcpServer.Conn.ReadFromUDP(buf)
 	if err != nil {
-		return addr, err
+		return nil, err
 	}
 
-	err = msg.Unmarshal(buf[:n])
+	pfcpMsg := &pfcp.Message{}
+	msg := NewMessage(addr, pfcpMsg)
+
+	err = pfcpMsg.Unmarshal(buf[:n])
 	if err != nil {
-		return addr, err
+		return msg, err
 	}
 
-	if msg.IsRequest() {
+	if pfcpMsg.IsRequest() {
 		// Todo: Implement SendingResponse type of reliable delivery
-		tx, err := pfcpServer.FindTransaction(msg, addr)
+		tx, err := pfcpServer.FindTransaction(pfcpMsg, addr)
 		if err != nil {
-			return addr, err
-		} else if tx != nil {
-			// err == nil && tx != nil => Resend Request
-			err = fmt.Errorf("Receive resend PFCP request")
-			tx.EventChannel <- pfcp.ReceiveResendRequest
-			return addr, err
-		} else {
-			// err == nil && tx == nil => New Request
-			return addr, nil
+			return msg, err
 		}
-	} else if msg.IsResponse() {
-		tx, err := pfcpServer.FindTransaction(msg, pfcpServer.Conn.LocalAddr().(*net.UDPAddr))
+		if tx != nil {
+			// tx != nil => Already Replied => Resend Request
+			tx.EventChannel <- pfcp.ReceiveEvent{
+				Type:       pfcp.ReceiveEventTypeResendRequest,
+				RemoteAddr: addr,
+				RcvMsg:     pfcpMsg,
+			}
+			return msg, ErrReceivedResentRequest
+		} else {
+			// tx == nil => New Request
+			return msg, nil
+		}
+	} else if pfcpMsg.IsResponse() {
+		tx, err := pfcpServer.FindTransaction(pfcpMsg, pfcpServer.Conn.LocalAddr().(*net.UDPAddr))
 		if err != nil {
-			return addr, err
+			return msg, err
 		}
 
-		tx.EventChannel <- pfcp.ReceiveValidResponse
+		tx.EventChannel <- pfcp.ReceiveEvent{
+			Type:       pfcp.ReceiveEventTypeValidResponse,
+			RemoteAddr: addr,
+			RcvMsg:     pfcpMsg,
+		}
 	}
 
-	return addr, nil
+	return msg, nil
 }
 
-func (pfcpServer *PfcpServer) WriteTo(msg pfcp.Message, addr *net.UDPAddr) error {
-	buf, err := msg.Marshal()
-	if err != nil {
-		return err
+func (pfcpServer *PfcpServer) WriteRequestTo(reqMsg *pfcp.Message, addr *net.UDPAddr) (resMsg *Message, err error) {
+	if !reqMsg.IsRequest() {
+		return nil, errors.New("not a request message")
 	}
 
-	/*TODO: check if all bytes of buf are sent*/
-	tx := pfcp.NewTransaction(msg, buf, pfcpServer.Conn, addr)
+	buf, err := reqMsg.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	tx := pfcp.NewTransaction(reqMsg, buf, pfcpServer.Conn, addr)
 
 	err = pfcpServer.PutTransaction(tx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	go pfcpServer.StartTxLifeCycle(tx)
-	return nil
+	return pfcpServer.StartReqTxLifeCycle(tx)
+}
+
+func (pfcpServer *PfcpServer) WriteResponseTo(resMsg *pfcp.Message, addr *net.UDPAddr) {
+	if !resMsg.IsResponse() {
+		logger.PFCPLog.Warn("not a response message")
+		return
+	}
+
+	buf, err := resMsg.Marshal()
+	if err != nil {
+		logger.PFCPLog.Warnf("marshal error: %+v", err)
+		return
+	}
+
+	tx := pfcp.NewTransaction(resMsg, buf, pfcpServer.Conn, addr)
+
+	err = pfcpServer.PutTransaction(tx)
+	if err != nil {
+		logger.PFCPLog.Warnf("PutTransaction error: %+v", err)
+		return
+	}
+
+	go pfcpServer.StartResTxLifeCycle(tx)
 }
 
 func (pfcpServer *PfcpServer) Close() error {
@@ -165,21 +204,42 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 		logger.PFCPLog.Warnln("In RemoveTransaction")
 		logger.PFCPLog.Warnln("Consumer IP: ", consumerAddr)
 		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " doesn't exist!")
-		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist\n", tx.SequenceNumber)
+		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist", tx.SequenceNumber)
 	}
 
 	logger.PFCPLog.Traceln("End RemoveTransaction")
 	return
 }
 
-func (pfcpServer *PfcpServer) StartTxLifeCycle(tx *pfcp.Transaction) {
-	// Start Transaction
-	tx.Start()
+func (pfcpServer *PfcpServer) StartReqTxLifeCycle(tx *pfcp.Transaction) (resMsg *Message, err error) {
+	defer func() {
+		// End Transaction
+		rmErr := pfcpServer.RemoveTransaction(tx)
+		if rmErr != nil {
+			logger.PFCPLog.Warnf("RemoveTransaction error: %+v", rmErr)
+		}
+	}()
 
-	// End Transaction
-	err := pfcpServer.RemoveTransaction(tx)
+	// Start Transaction
+	event, err := tx.StartSendingRequest()
 	if err != nil {
-		logger.PFCPLog.Warnln(err)
+		return nil, err
+	}
+	return NewMessage(event.RemoteAddr, event.RcvMsg), nil
+}
+
+// StartResTxLifeCycle does not return an error because if an error occurs, a resend request will be sent
+func (pfcpServer *PfcpServer) StartResTxLifeCycle(tx *pfcp.Transaction) {
+	// Start Transaction
+	err := tx.StartSendingResponse()
+	if err != nil {
+		logger.PFCPLog.Warnf("SendingResponse error: %+v", err)
+		return
+	}
+	// End Transaction
+	err = pfcpServer.RemoveTransaction(tx)
+	if err != nil {
+		logger.PFCPLog.Warnf("RemoveTransaction error: %+v", err)
 	}
 }
 

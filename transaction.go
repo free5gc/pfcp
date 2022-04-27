@@ -1,6 +1,8 @@
 package pfcp
 
 import (
+	"errors"
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -47,19 +49,19 @@ type Transaction struct {
 	SequenceNumber uint32
 	MessageType    MessageType
 	TxType         TransactionType
-	EventChannel   chan EventType
+	EventChannel   chan ReceiveEvent
 	Conn           *net.UDPConn
 	DestAddr       *net.UDPAddr
 	ConsumerAddr   string
 }
 
 // NewTransaction - create pfcp transaction object
-func NewTransaction(pfcpMSG Message, binaryMSG []byte, Conn *net.UDPConn, DestAddr *net.UDPAddr) (tx *Transaction) {
+func NewTransaction(pfcpMSG *Message, binaryMSG []byte, Conn *net.UDPConn, DestAddr *net.UDPAddr) (tx *Transaction) {
 	tx = &Transaction{
 		SendMsg:        binaryMSG,
 		SequenceNumber: pfcpMSG.Header.SequenceNumber,
 		MessageType:    pfcpMSG.Header.MessageType,
-		EventChannel:   make(chan EventType),
+		EventChannel:   make(chan ReceiveEvent),
 		Conn:           Conn,
 		DestAddr:       DestAddr,
 	}
@@ -76,54 +78,59 @@ func NewTransaction(pfcpMSG Message, binaryMSG []byte, Conn *net.UDPConn, DestAd
 	return
 }
 
-func (transaction *Transaction) Start() {
-	logger.PFCPLog.Tracef("Start Transaction [%d]\n", transaction.SequenceNumber)
+func (tx *Transaction) StartSendingRequest() (*ReceiveEvent, error) {
+	if tx.TxType != SendingRequest {
+		return nil, errors.New("this transaction is not for sending request")
+	}
 
-	if transaction.TxType == SendingRequest {
-		for iter := 0; iter < NumOfResend; iter++ {
-			timer := time.NewTimer(ResendRequestTimeOutPeriod * time.Second)
+	logger.PFCPLog.Tracef("Start Request Transaction [%d]", tx.SequenceNumber)
 
-			_, err := transaction.Conn.WriteToUDP(transaction.SendMsg, transaction.DestAddr)
-			if err != nil {
-				logger.PFCPLog.Warnf("Request Transaction [%d]: %s\n", transaction.SequenceNumber, err)
-				return
-			}
-
-			select {
-			case event := <-transaction.EventChannel:
-
-				if event == ReceiveValidResponse {
-					logger.PFCPLog.Tracef("Request Transaction [%d]: receive valid response\n", transaction.SequenceNumber)
-					return
-				}
-			case <-timer.C:
-				logger.PFCPLog.Tracef("Request Transaction [%d]: timeout expire\n", transaction.SequenceNumber)
-				logger.PFCPLog.Tracef("Request Transaction [%d]: Resend packet\n", transaction.SequenceNumber)
-				continue
-			}
+	for iter := 0; iter < NumOfResend; iter++ {
+		_, err := tx.Conn.WriteToUDP(tx.SendMsg, tx.DestAddr)
+		if err != nil {
+			return nil, fmt.Errorf("Request Transaction [%d]: %s", tx.SequenceNumber, err)
 		}
-	} else if transaction.TxType == SendingResponse {
-		// Todo :Implement SendingResponse type of reliable delivery
-		timer := time.NewTimer(ResendResponseTimeOutPeriod * time.Second)
-		for iter := 0; iter < NumOfResend; iter++ {
-			_, err := transaction.Conn.WriteToUDP(transaction.SendMsg, transaction.DestAddr)
-			if err != nil {
-				logger.PFCPLog.Warnf("Response Transaction [%d]: sending error\n", transaction.SequenceNumber)
-				return
-			}
+		logger.PFCPLog.Tracef("Request Transaction [%d]: Sent a PFCP request packet", tx.SequenceNumber)
 
-			select {
-			case event := <-transaction.EventChannel:
-
-				if event == ReceiveResendRequest {
-					logger.PFCPLog.Tracef("Response Transaction [%d]: receive resend request\n", transaction.SequenceNumber)
-					logger.PFCPLog.Tracef("Response Transaction [%d]: Resend packet\n", transaction.SequenceNumber)
-					continue
-				}
-			case <-timer.C:
-				logger.PFCPLog.Tracef("Response Transaction [%d]: timeout expire\n", transaction.SequenceNumber)
-				return
+		select {
+		case event := <-tx.EventChannel:
+			if event.Type == ReceiveEventTypeValidResponse {
+				logger.PFCPLog.Tracef("Request Transaction [%d]: receive valid response", tx.SequenceNumber)
+				return &event, nil
 			}
+		case <-time.After(ResendRequestTimeOutPeriod * time.Second):
+			logger.PFCPLog.Tracef("Request Transaction [%d]: timeout expire", tx.SequenceNumber)
+			continue
+		}
+	}
+	return nil, fmt.Errorf("Request Transaction [%d]: retry-out", tx.SequenceNumber)
+}
+
+func (tx *Transaction) StartSendingResponse() error {
+	if tx.TxType != SendingResponse {
+		return errors.New("this transaction is not for sending response")
+	}
+
+	logger.PFCPLog.Tracef("Start Response Transaction [%d]", tx.SequenceNumber)
+
+	for {
+		_, err := tx.Conn.WriteToUDP(tx.SendMsg, tx.DestAddr)
+		if err != nil {
+			return fmt.Errorf("Response Transaction [%d]: sending error", tx.SequenceNumber)
+		}
+
+		select {
+		case event := <-tx.EventChannel:
+			if event.Type == ReceiveEventTypeResendRequest {
+				logger.PFCPLog.Tracef("Response Transaction [%d]: receive resend request", tx.SequenceNumber)
+				logger.PFCPLog.Tracef("Response Transaction [%d]: Resend packet", tx.SequenceNumber)
+				continue
+			} else {
+				logger.PFCPLog.Warnf("Response Transaction [%d]: receive invalid request", tx.SequenceNumber)
+			}
+		case <-time.After(ResendResponseTimeOutPeriod * time.Second):
+			logger.PFCPLog.Tracef("Response Transaction [%d]: timeout expire", tx.SequenceNumber)
+			return nil
 		}
 	}
 }
