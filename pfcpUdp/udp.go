@@ -69,7 +69,6 @@ func (pfcpServer *PfcpServer) Listen() error {
 }
 
 func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
-
 	buf := make([]byte, PFCP_MAX_UDP_LEN)
 	n, addr, err := pfcpServer.Conn.ReadFromUDP(buf)
 	if err != nil {
@@ -85,7 +84,7 @@ func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
 	}
 
 	if pfcpMsg.IsRequest() {
-		//Todo: Implement SendingResponse type of reliable delivery
+		// Todo: Implement SendingResponse type of reliable delivery
 		tx, err := pfcpServer.FindTransaction(pfcpMsg, addr)
 		if err != nil {
 			return msg, err
@@ -214,14 +213,14 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 
 func (pfcpServer *PfcpServer) StartReqTxLifeCycle(tx *pfcp.Transaction) (resMsg *Message, err error) {
 	defer func() {
-		//End Transaction
-		err := pfcpServer.RemoveTransaction(tx)
-		if err != nil {
-			logger.PFCPLog.Warnf("RemoveTransaction error: %+v", err)
+		// End Transaction
+		rmErr := pfcpServer.RemoveTransaction(tx)
+		if rmErr != nil {
+			logger.PFCPLog.Warnf("RemoveTransaction error: %+v", rmErr)
 		}
 	}()
 
-	//Start Transaction
+	// Start Transaction
 	event, err := tx.StartSendingRequest()
 	if err != nil {
 		return nil, err
@@ -231,13 +230,13 @@ func (pfcpServer *PfcpServer) StartReqTxLifeCycle(tx *pfcp.Transaction) (resMsg 
 
 // StartResTxLifeCycle does not return an error because if an error occurs, a resend request will be sent
 func (pfcpServer *PfcpServer) StartResTxLifeCycle(tx *pfcp.Transaction) {
-	//Start Transaction
+	// Start Transaction
 	err := tx.StartSendingResponse()
 	if err != nil {
 		logger.PFCPLog.Warnf("SendingResponse error: %+v", err)
 		return
 	}
-	//End Transaction
+	// End Transaction
 	err = pfcpServer.RemoveTransaction(tx)
 	if err != nil {
 		logger.PFCPLog.Warnf("RemoveTransaction error: %+v", err)
