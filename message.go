@@ -558,12 +558,6 @@ type PFCPSessionDeletionResponse struct {
 	UsageReport                *[]UsageReportPFCPSessionDeletionResponse `tlv:"79"`
 }
 
-type UsageReport struct {
-	URRID              *pfcpType.URRID
-	UsageReportTrigger *pfcpType.UsageReportTrigger
-	VolumeMeasurement  *pfcpType.VolumeMeasurement
-}
-
 type UsageReportPFCPSessionDeletionResponse struct {
 	URRID                      *pfcpType.URRID               `tlv:"81"`
 	URSEQN                     *pfcpType.URSEQN              `tlv:"104"`
