@@ -5,6 +5,8 @@ import (
 )
 
 type MeasurementInformation struct {
+	Mnop bool
+	Istm bool
 	Radi bool
 	Inam bool
 	Mbqe bool
@@ -12,7 +14,9 @@ type MeasurementInformation struct {
 
 func (m *MeasurementInformation) MarshalBinary() (data []byte, err error) {
 	// Octet 5
-	tmpUint8 := btou(m.Radi)<<2 |
+	tmpUint8 := btou(m.Mnop)<<4 |
+		btou(m.Istm)<<3 |
+		btou(m.Radi)<<2 |
 		btou(m.Inam)<<1 |
 		btou(m.Mbqe)
 	data = append([]byte(""), tmpUint8)
@@ -28,6 +32,8 @@ func (m *MeasurementInformation) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
+	m.Mnop = utob(data[idx] & BitMask5)
+	m.Istm = utob(data[idx] & BitMask4)
 	m.Radi = utob(data[idx] & BitMask3)
 	m.Inam = utob(data[idx] & BitMask2)
 	m.Mbqe = utob(data[idx] & BitMask1)

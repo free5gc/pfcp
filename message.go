@@ -522,15 +522,15 @@ type RemoveTrafficEndpoint struct {
 }
 
 type PFCPSessionModificationResponse struct {
-	Cause                             *pfcpType.Cause                             `tlv:"19"`
-	OffendingIE                       *pfcpType.OffendingIE                       `tlv:"40"`
-	CreatedPDR                        *CreatedPDR                                 `tlv:"8"`
-	LoadControlInformation            *LoadControlInformation                     `tlv:"51"`
-	OverloadControlInformation        *OverloadControlInformation                 `tlv:"54"`
-	UsageReport                       *UsageReportPFCPSessionModificationResponse `tlv:"78"`
-	FailedRuleID                      *pfcpType.FailedRuleID                      `tlv:"114"`
-	AdditionalUsageReportsInformation *pfcpType.AdditionalUsageReportsInformation `tlv:"126"`
-	CreatedUpdatedTrafficEndpoint     *CreatedTrafficEndpoint                     `tlv:"128"`
+	Cause                             *pfcpType.Cause                               `tlv:"19"`
+	OffendingIE                       *pfcpType.OffendingIE                         `tlv:"40"`
+	CreatedPDR                        *CreatedPDR                                   `tlv:"8"`
+	LoadControlInformation            *LoadControlInformation                       `tlv:"51"`
+	OverloadControlInformation        *OverloadControlInformation                   `tlv:"54"`
+	UsageReport                       *[]UsageReportPFCPSessionModificationResponse `tlv:"78"`
+	FailedRuleID                      *pfcpType.FailedRuleID                        `tlv:"114"`
+	AdditionalUsageReportsInformation *pfcpType.AdditionalUsageReportsInformation   `tlv:"126"`
+	CreatedUpdatedTrafficEndpoint     *CreatedTrafficEndpoint                       `tlv:"128"`
 }
 
 type UsageReportPFCPSessionModificationResponse struct {
@@ -551,11 +551,17 @@ type UsageReportPFCPSessionModificationResponse struct {
 type PFCPSessionDeletionRequest struct{}
 
 type PFCPSessionDeletionResponse struct {
-	Cause                      *pfcpType.Cause                         `tlv:"19"`
-	OffendingIE                *pfcpType.OffendingIE                   `tlv:"40"`
-	LoadControlInformation     *LoadControlInformation                 `tlv:"51"`
-	OverloadControlInformation *OverloadControlInformation             `tlv:"54"`
-	UsageReport                *UsageReportPFCPSessionDeletionResponse `tlv:"79"`
+	Cause                      *pfcpType.Cause                           `tlv:"19"`
+	OffendingIE                *pfcpType.OffendingIE                     `tlv:"40"`
+	LoadControlInformation     *LoadControlInformation                   `tlv:"51"`
+	OverloadControlInformation *OverloadControlInformation               `tlv:"54"`
+	UsageReport                *[]UsageReportPFCPSessionDeletionResponse `tlv:"79"`
+}
+
+type UsageReport struct {
+	URRID              *pfcpType.URRID
+	UsageReportTrigger *pfcpType.UsageReportTrigger
+	VolumeMeasurement  *pfcpType.VolumeMeasurement
 }
 
 type UsageReportPFCPSessionDeletionResponse struct {
@@ -575,7 +581,7 @@ type UsageReportPFCPSessionDeletionResponse struct {
 type PFCPSessionReportRequest struct {
 	ReportType                        *pfcpType.ReportType                        `tlv:"39"`
 	DownlinkDataReport                *DownlinkDataReport                         `tlv:"83"`
-	UsageReport                       *UsageReportPFCPSessionReportRequest        `tlv:"80"`
+	UsageReport                       *[]UsageReportPFCPSessionReportRequest      `tlv:"80"`
 	ErrorIndicationReport             *ErrorIndicationReport                      `tlv:"99"`
 	LoadControlInformation            *LoadControlInformation                     `tlv:"51"`
 	OverloadControlInformation        *OverloadControlInformation                 `tlv:"54"`
