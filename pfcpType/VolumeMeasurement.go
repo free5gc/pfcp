@@ -50,6 +50,7 @@ func (v *VolumeMeasurement) MarshalBinary() (data []byte, err error) {
 	if v.Dlvol {
 		data = append(data, make([]byte, 8)...)
 		binary.BigEndian.PutUint64(data[idx:], v.DownlinkVolume)
+		idx = idx + 8
 	}
 
 	// Octet r to (r+7)
