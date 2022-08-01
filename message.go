@@ -494,7 +494,7 @@ type RemoveQER struct {
 }
 
 type QueryURR struct {
-	URRID int32 `tlv:"81"`
+	URRID *pfcpType.URRID `tlv:"81"`
 }
 
 type UpdateBARPFCPSessionModificationRequest struct {
