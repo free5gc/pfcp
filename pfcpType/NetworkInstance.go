@@ -5,7 +5,7 @@ type NetworkInstance struct {
 }
 
 func (n *NetworkInstance) MarshalBinary() ([]byte, error) {
-	return fqdnToRfc1035(n.NetworkInstance)
+	return fqdnToRfc1035(n.NetworkInstance, true)
 }
 
 func (n *NetworkInstance) UnmarshalBinary(data []byte) error {
