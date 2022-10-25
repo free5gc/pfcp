@@ -278,7 +278,7 @@ type CreateURR struct {
 	LinkedURRID               *pfcpType.LinkedURRID               `tlv:"82"`
 	MeasurementInformation    *pfcpType.MeasurementInformation    `tlv:"100"`
 	TimeQuotaMechanism        *pfcpType.TimeQuotaMechanism        `tlv:"115"`
-	AggregatedURRs            *AggregatedURRs                     `tlv:"118"`
+	AggregatedURRs            []*AggregatedURRs                   `tlv:"118"`
 	FARIDForQuotaAction       *pfcpType.FARID                     `tlv:"108"`
 	EthernetInactivityTimer   *pfcpType.EthernetInactivityTimer   `tlv:"146"`
 	AdditionalMonitoringTime  *AdditionalMonitoringTime           `tlv:"147"`
