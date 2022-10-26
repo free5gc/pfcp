@@ -50,7 +50,7 @@ func (n *NodeID) MarshalBinary() ([]byte, error) {
 		if n.FQDN == "" || n.IP != nil {
 			return []byte(""), errors.New("type of node ID is fqdn, should fill FQDN field and IP field should be empty")
 		}
-		if rfc1035RR, err := fqdnToRfc1035(n.FQDN); err != nil {
+		if rfc1035RR, err := fqdnToRfc1035(n.FQDN, false); err != nil {
 			return nil, err
 		} else {
 			nodeIdValue = rfc1035RR
