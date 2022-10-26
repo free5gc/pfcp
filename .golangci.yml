@@ -5,7 +5,7 @@ run:
   # default concurrency is a available CPU number
   concurrency: 4
   # timeout for analysis, e.g. 30s, 5m, default is 1m
-  timeout: 1m
+  timeout: 3m
   # exit code when at least one issue was found, default is 1
   issues-exit-code: 1
   # include test files or not, default is true
@@ -29,12 +29,6 @@ run:
   # "/" will be replaced by current OS file path separator to properly work
   # on Windows.
   skip-files:
-    - "api_.*\\.go$"
-    - "model_.*\\.go$"
-    - "routers.go"
-    - "client.go"
-    - "configuration.go"
-    - "nas.go"
   # by default isn't set. If set we pass it to "go list -mod={option}". From "go help modules":
   # If invoked with -mod=readonly, the go command is disallowed from the implicit
   # automatic updating of go.mod described above. Instead, it fails when any changes
@@ -204,13 +198,15 @@ linters-settings:
     multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
     multi-func: false # Enforces newlines (or comments) after every multi-line function signature
   gci:
-    local-prefixes: "github.com/free5gc"
+    sections:
+      - standard
+      - default
+      - prefix(github.com/free5gc)
+    section-separators:
+      - newLine
   misspell:
     #locale: US
     ignore-words:
-  whitespace:
-    multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
-    multi-func: false # Enforces newlines (or comments) after every multi-line function signature
   wsl:
     # If true append is only allowed to be cuddled if appending value is
     # matching variables, fields or types on line above. Default is true.
@@ -249,13 +245,14 @@ linters:
     # Additional
     - lll
     - godox
-    #- gomnd
-    #- goconst
+    # - gomnd
+    # - goconst
     # - gocognit
     # - maligned
     # - nestif
     # - gomodguard
     - nakedret
+    # - golint
     - gci
     - misspell
     - gofumpt
@@ -266,9 +263,9 @@ linters:
     - dogsled
     - bodyclose
     - asciicheck
-      #- stylecheck
-      # - unparam
-      # - wsl
+    # - stylecheck
+    # - unparam
+    # - wsl
 
   #disable-all: false
   fast: true
