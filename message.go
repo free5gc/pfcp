@@ -282,6 +282,7 @@ type CreateURR struct {
 	FARIDForQuotaAction       *pfcpType.FARID                     `tlv:"108"`
 	EthernetInactivityTimer   *pfcpType.EthernetInactivityTimer   `tlv:"146"`
 	AdditionalMonitoringTime  *AdditionalMonitoringTime           `tlv:"147"`
+	QuotaValidityTime         *pfcpType.QuotaValidityTime         `tlv:"181"`
 }
 
 type AggregatedURRs struct {
@@ -463,6 +464,7 @@ type UpdateURR struct {
 	FARIDForQuotaAction       *pfcpType.FARID                     `tlv:"108"`
 	EthernetInactivityTimer   *pfcpType.EthernetInactivityTimer   `tlv:"146"`
 	AdditionalMonitoringTime  *AdditionalMonitoringTime           `tlv:"147"`
+	QuotaValidityTime         *pfcpType.QuotaValidityTime         `tlv:"181"`
 }
 
 type UpdateQER struct {

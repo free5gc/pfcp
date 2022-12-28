@@ -19,6 +19,8 @@ type ReportingTriggers struct {
 	Envcl bool
 	Timqu bool
 	Volqu bool
+	Ipmjl bool
+	Quvti bool
 }
 
 func (r *ReportingTriggers) MarshalBinary() (data []byte, err error) {
@@ -34,7 +36,9 @@ func (r *ReportingTriggers) MarshalBinary() (data []byte, err error) {
 	data = append([]byte(""), tmpUint8)
 
 	// Octet 6
-	tmpUint8 = btou(r.Evequ)<<5 |
+	tmpUint8 = btou(r.Quvti)<<7 |
+		btou(r.Ipmjl)<<6 |
+		btou(r.Evequ)<<5 |
 		btou(r.Eveth)<<4 |
 		btou(r.Macar)<<3 |
 		btou(r.Envcl)<<2 |
