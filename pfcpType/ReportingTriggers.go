@@ -71,6 +71,8 @@ func (r *ReportingTriggers) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
+	r.Quvti = utob(data[idx] & BitMask8)
+	r.Ipmjl = utob(data[idx] & BitMask7)
 	r.Evequ = utob(data[idx] & BitMask6)
 	r.Eveth = utob(data[idx] & BitMask5)
 	r.Macar = utob(data[idx] & BitMask4)
