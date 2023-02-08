@@ -1,7 +1,7 @@
 package pfcpType
 
 type Multiplier struct {
-	Multiplierdata []byte 
+	Multiplierdata []byte
 }
 
 func (m *Multiplier) MarshalBinary() (data []byte, err error) {

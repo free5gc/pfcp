@@ -5,7 +5,7 @@ import (
 )
 
 type AggregatedURRID struct {
-	AggregatedURRIDdata uint32 
+	AggregatedURRIDdata uint32
 }
 
 func (a *AggregatedURRID) MarshalBinary() (data []byte, err error) {

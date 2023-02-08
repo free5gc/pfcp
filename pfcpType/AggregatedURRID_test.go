@@ -23,7 +23,7 @@ func TestUnmarshalAggregatedURRID(t *testing.T) {
 
 	assert.Nil(t, err)
 	expectData := AggregatedURRID{
-		AggregatedURRIDdata : 12345678,
+		AggregatedURRIDdata: 12345678,
 	}
 	assert.Equal(t, expectData, testData)
 }
