@@ -2,7 +2,7 @@ package pfcpType
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -42,20 +42,31 @@ func utob(u uint8) bool {
 	return u != 0
 }
 
-func fqdnToRfc1035(fqdn string) ([]byte, error) {
+func fqdnToRfc1035(fqdn string, isDnn bool) ([]byte, error) {
 	var rfc1035RR []byte
 	domainSegments := strings.Split(fqdn, ".")
 
+	typeName := "fqdn"
+	maxLabelLen := 63
+	maxTotalLen := 255
+	if isDnn {
+		typeName = "DNN"
+		// In RFC 1035 max length of label is 63, but in TS 23.003 including length octet
+		maxLabelLen = 62
+		// In RFC 1035 max length of FQDN is 255, but DNN in TS 23.003 is 100
+		maxTotalLen = 100
+	}
+
 	for _, segment := range domainSegments {
-		if len(segment) > 63 {
-			return nil, errors.New("fqdn limit the label to 63 octets or less")
+		if len(segment) > maxLabelLen {
+			return nil, fmt.Errorf("%s limit the label to %d octets or less", typeName, maxLabelLen)
 		}
 		rfc1035RR = append(rfc1035RR, uint8(len(segment)))
 		rfc1035RR = append(rfc1035RR, segment...)
 	}
 
-	if len(rfc1035RR) > 255 {
-		return nil, errors.New("fqdn should less then 255 octet")
+	if len(rfc1035RR) > maxTotalLen {
+		return nil, fmt.Errorf("%s should less then %d octet", typeName, maxTotalLen)
 	}
 	return rfc1035RR, nil
 }

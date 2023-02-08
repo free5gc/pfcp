@@ -28,6 +28,11 @@ func (t *TxTable) Load(sequenceNumber uint32) (*Transaction, bool) {
 	return nil, false
 }
 
+func (t *TxTable) LoadOrStore(sequenceNumber uint32, storeTx *Transaction) (*Transaction, bool) {
+	tx, loaded := t.m.LoadOrStore(sequenceNumber, storeTx)
+	return tx.(*Transaction), loaded
+}
+
 func (t *TxTable) Delete(sequenceNumber uint32) {
 	t.m.Delete(sequenceNumber)
 }
