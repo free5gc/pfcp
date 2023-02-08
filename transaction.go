@@ -45,7 +45,7 @@ const (
 const (
 	NumOfResend                 = 3
 	ResendRequestTimeOutPeriod  = 3
-	ResendResponseTimeOutPeriod = 50
+	ResendResponseTimeOutPeriod = 15
 )
 
 // Transaction - represent the transaction state of pfcp message
@@ -133,7 +133,7 @@ func (tx *Transaction) StartSendingResponse() error {
 			} else {
 				logger.PFCPLog.Warnf("Response Transaction [%d]: receive invalid request", tx.SequenceNumber)
 			}
-		case <-time.After(ResendResponseTimeOutPeriod * time.Millisecond):
+		case <-time.After(ResendResponseTimeOutPeriod * time.Second):
 			logger.PFCPLog.Tracef("Response Transaction [%d]: timeout expire", tx.SequenceNumber)
 			return nil
 		}
