@@ -19,6 +19,8 @@ type ReportingTriggers struct {
 	Envcl bool
 	Timqu bool
 	Volqu bool
+	Ipmjl bool
+	Quvti bool
 }
 
 func (r *ReportingTriggers) MarshalBinary() (data []byte, err error) {
@@ -34,7 +36,9 @@ func (r *ReportingTriggers) MarshalBinary() (data []byte, err error) {
 	data = append([]byte(""), tmpUint8)
 
 	// Octet 6
-	tmpUint8 = btou(r.Evequ)<<5 |
+	tmpUint8 = btou(r.Quvti)<<7 |
+		btou(r.Ipmjl)<<6 |
+		btou(r.Evequ)<<5 |
 		btou(r.Eveth)<<4 |
 		btou(r.Macar)<<3 |
 		btou(r.Envcl)<<2 |
@@ -67,6 +71,8 @@ func (r *ReportingTriggers) UnmarshalBinary(data []byte) error {
 	if length < idx+1 {
 		return fmt.Errorf("Inadequate TLV length: %d", length)
 	}
+	r.Quvti = utob(data[idx] & BitMask8)
+	r.Ipmjl = utob(data[idx] & BitMask7)
 	r.Evequ = utob(data[idx] & BitMask6)
 	r.Eveth = utob(data[idx] & BitMask5)
 	r.Macar = utob(data[idx] & BitMask4)
