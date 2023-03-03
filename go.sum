@@ -3,8 +3,8 @@ github.com/antonfisher/nested-logrus-formatter v1.3.1/go.mod h1:6WTfyWFkBc9+zyBa
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/free5gc/tlv v1.0.2-0.20221213035259-4f03751fadbe h1:1kPc6s3F82y9MEGtNcV0pZ9/W9txhpxqSgjbSRN2yuU=
-github.com/free5gc/tlv v1.0.2-0.20221213035259-4f03751fadbe/go.mod h1:KbbQJIgGaA2jIwnTJgJ/lE3JSDEp3898S6c4TEq0Vyg=
+github.com/free5gc/tlv v1.0.2-0.20230131124215-8b6ebd69bf93 h1:QPSSI5zw4goiIfxem9doVyMqTO8iKLQ536pzpET5Y+Q=
+github.com/free5gc/tlv v1.0.2-0.20230131124215-8b6ebd69bf93/go.mod h1:KbbQJIgGaA2jIwnTJgJ/lE3JSDEp3898S6c4TEq0Vyg=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
