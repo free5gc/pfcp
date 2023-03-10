@@ -14,20 +14,32 @@ func TestMarshalNetworkInstance(t *testing.T) {
 		expected []byte
 	}{
 		{
-			NetworkInstance{
+			in: NetworkInstance{
 				NetworkInstance: "www.example.com",
 			},
-			[]byte{
+			expected: []byte{
+				0x77, 0x77, 0x77,
+				0x2e, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65,
+				0x2e, 0x63, 0x6F, 0x6D,
+			},
+		},
+		{
+			in: NetworkInstance{
+				NetworkInstance: "www.example.com",
+				FQDNEncoding:    true,
+			},
+			expected: []byte{
 				0x3, 0x77, 0x77, 0x77,
 				0x7, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65,
 				0x3, 0x63, 0x6F, 0x6D,
 			},
 		},
 		{
-			NetworkInstance{
+			in: NetworkInstance{
 				NetworkInstance: "UPF-a.free5gc.org",
+				FQDNEncoding:    true,
 			}, // case-insnesitive case
-			[]byte{
+			expected: []byte{
 				0x5, 0x55, 0x50, 0x46, 0x2d, 0x61,
 				0x7, 0x66, 0x72, 0x65, 0x65, 0x35, 0x67, 0x63,
 				0x3, 0x6F, 0x72, 0x67,
@@ -38,6 +50,7 @@ func TestMarshalNetworkInstance(t *testing.T) {
 			NetworkInstance{
 				NetworkInstance: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" +
 					".ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij",
+				FQDNEncoding: true,
 			},
 			[]byte{0x3E,
 				0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
@@ -70,11 +83,13 @@ func TestMarshalInvalidNetworkInstance(t *testing.T) {
 		{
 			// length of label > 62
 			NetworkInstance: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789A",
+			FQDNEncoding:    true,
 		},
 		{
 			// length of encoded buffer > 100
 			NetworkInstance: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789." +
 				"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk",
+			FQDNEncoding: true,
 		},
 	}
 
@@ -89,35 +104,54 @@ func TestUnmarshalNetworkInstance(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
+		in       NetworkInstance
 		inputbuf []byte
 		expected NetworkInstance
 	}{
 		{
-			[]byte{
-				0x3, 0x77, 0x77, 0x77,
-				0x7, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65,
-				0x3, 0x63, 0x6F, 0x6D,
+			in: NetworkInstance{},
+			inputbuf: []byte{
+				0x77, 0x77, 0x77,
+				0x2e, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65,
+				0x2e, 0x63, 0x6F, 0x6D,
 			},
-			NetworkInstance{
+			expected: NetworkInstance{
 				NetworkInstance: "www.example.com",
 			},
 		},
 		{
-			[]byte{
+			in: NetworkInstance{
+				FQDNEncoding: true,
+			},
+			inputbuf: []byte{
+				0x3, 0x77, 0x77, 0x77,
+				0x7, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65,
+				0x3, 0x63, 0x6F, 0x6D,
+			},
+			expected: NetworkInstance{
+				NetworkInstance: "www.example.com",
+				FQDNEncoding:    true,
+			},
+		},
+		{
+			in: NetworkInstance{
+				FQDNEncoding: true,
+			},
+			inputbuf: []byte{
 				0x5, 0x55, 0x50, 0x46, 0x2d, 0x61,
 				0x7, 0x66, 0x72, 0x65, 0x65, 0x35, 0x67, 0x63,
 				0x3, 0x6F, 0x72, 0x67,
 			},
-			NetworkInstance{
+			expected: NetworkInstance{
 				NetworkInstance: "UPF-a.free5gc.org",
+				FQDNEncoding:    true,
 			},
 		},
 	}
 
-	var n NetworkInstance
 	for _, test := range tests {
-		err := n.UnmarshalBinary(test.inputbuf)
+		err := test.in.UnmarshalBinary(test.inputbuf)
 		require.NoError(t, err)
-		require.Equal(t, test.expected, n)
+		require.Equal(t, test.expected, test.in)
 	}
 }
