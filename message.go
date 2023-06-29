@@ -389,7 +389,7 @@ type PFCPSessionModificationRequest struct {
 	UpdateBAR                *UpdateBARPFCPSessionModificationRequest `tlv:"86"`
 	UpdateTrafficEndpoint    *UpdateTrafficEndpoint                   `tlv:"129"`
 	PFCPSMReqFlags           *pfcpType.PFCPSMReqFlags                 `tlv:"49"`
-	QueryURR                 *QueryURR                                `tlv:"77"`
+	QueryURR                 []*QueryURR                              `tlv:"77"`
 	PGWCFQCSID               *pfcpType.FQCSID                         `tlv:"65"`
 	SGWCFQCSID               *pfcpType.FQCSID                         `tlv:"65"`
 	MMEFQCSID                *pfcpType.FQCSID                         `tlv:"65"`
