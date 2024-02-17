@@ -3,8 +3,8 @@ package logger
 import (
 	"time"
 
-	formatter "github.com/antonfisher/nested-logrus-formatter"
 	"github.com/sirupsen/logrus"
+	formatter "github.com/tim-ywliu/nested-logrus-formatter"
 )
 
 var (
