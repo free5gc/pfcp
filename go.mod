@@ -3,7 +3,7 @@ module github.com/free5gc/pfcp
 go 1.21
 
 require (
-	github.com/free5gc/tlv v1.0.2
+	github.com/free5gc/tlv v1.0.3-0.20240503144839-e03d55722836
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.8.3
 	github.com/tim-ywliu/nested-logrus-formatter v1.3.2

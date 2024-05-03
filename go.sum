@@ -1,7 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/free5gc/tlv v1.0.2 h1:gb7PRbJFrYXlbqIKk0t3XuxJNecc4A7X2Y+CXS/FzEM=
-github.com/free5gc/tlv v1.0.2/go.mod h1:maEgHMIoJBYlRxVSrhiYzsKHyVh4d4pV0yl86DuTbv8=
+github.com/free5gc/tlv v1.0.3-0.20240503144839-e03d55722836 h1:Q4E3vWDbLbpQpYhfw+ULgiTqlUTBAG1Uqxye/yGGsmU=
+github.com/free5gc/tlv v1.0.3-0.20240503144839-e03d55722836/go.mod h1:yed15LmbeKC89jflbH9eoJvMHil6IiPdw+NM/CBJjdc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
