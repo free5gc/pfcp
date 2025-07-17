@@ -26,7 +26,7 @@ func (p *PFCPSMReqFlags) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	p.Qaurr = utob(data[idx] & BitMask3)
 	p.Sndem = utob(data[idx] & BitMask2)
@@ -34,7 +34,7 @@ func (p *PFCPSMReqFlags) UnmarshalBinary(data []byte) error {
 	idx = idx + 1
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

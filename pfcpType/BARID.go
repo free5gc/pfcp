@@ -21,13 +21,13 @@ func (b *BARID) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	b.BarIdValue = data[idx]
 	idx = idx + 1
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

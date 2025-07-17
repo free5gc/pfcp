@@ -29,7 +29,7 @@ func (o *OuterHeaderCreation) MarshalBinary() (data []byte, err error) {
 	Ipv4 = utob(octet5&BitMask1) || utob(octet5&BitMask3)
 	Ipv6 = utob(octet5&BitMask2) || utob(octet5&BitMask4)
 	if !GtpU && !Udp {
-		return []byte(""), fmt.Errorf("At least one bit of outer header description field shall be set")
+		return []byte(""), fmt.Errorf("at least one bit of outer header description field shall be set")
 	}
 
 	var idx uint16 = 0
@@ -78,7 +78,7 @@ func (o *OuterHeaderCreation) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5 to 6
 	if length < idx+2 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	o.OuterHeaderCreationDescription = binary.LittleEndian.Uint16(data[idx:])
 	idx = idx + 2
@@ -90,13 +90,13 @@ func (o *OuterHeaderCreation) UnmarshalBinary(data []byte) error {
 	Ipv4 = utob(octet5&BitMask1) || utob(octet5&BitMask3)
 	Ipv6 = utob(octet5&BitMask2) || utob(octet5&BitMask4)
 	if !GtpU && !Udp {
-		return fmt.Errorf("None of outer header description field is set")
+		return fmt.Errorf("none of outer header description field is set")
 	}
 
 	// Octet m to (m+3)
 	if GtpU {
 		if length < idx+4 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		o.Teid = binary.BigEndian.Uint32(data[idx:])
 		idx = idx + 4
@@ -105,7 +105,7 @@ func (o *OuterHeaderCreation) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+3)
 	if Ipv4 {
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		o.Ipv4Address = net.IP(data[idx : idx+net.IPv4len])
 		idx = idx + net.IPv4len
@@ -114,7 +114,7 @@ func (o *OuterHeaderCreation) UnmarshalBinary(data []byte) error {
 	// Octet q to (q+15)
 	if Ipv6 {
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		o.Ipv6Address = net.IP(data[idx : idx+net.IPv6len])
 		idx = idx + net.IPv6len
@@ -123,14 +123,14 @@ func (o *OuterHeaderCreation) UnmarshalBinary(data []byte) error {
 	// Octet
 	if Udp {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		o.PortNumber = binary.BigEndian.Uint16(data[idx:])
 		idx = idx + 2
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

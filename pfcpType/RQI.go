@@ -14,7 +14,7 @@ func (r *RQI) MarshalBinary() ([]byte, error) {
 	buf := &bytes.Buffer{}
 
 	if err := buf.WriteByte(btou(r.RQI)); err != nil {
-		return nil, fmt.Errorf("marshal RQI fail: " + err.Error())
+		return nil, fmt.Errorf("marshal RQI fail: %s", err.Error())
 	}
 
 	return buf.Bytes(), nil
@@ -25,7 +25,7 @@ func (r *RQI) UnmarshalBinary(data []byte) error {
 	var tmpByte byte
 
 	if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {
-		return fmt.Errorf("unmarshal RQI fail: " + err.Error())
+		return fmt.Errorf("unmarshal RQI fail: %s", err.Error())
 	}
 
 	r.RQI = utob(tmpByte)

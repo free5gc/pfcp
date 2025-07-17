@@ -29,7 +29,7 @@ func (d *DLBufferingSuggestedPacketCount) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5 to (n+4)
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	if length == 1 {
 		d.PacketCountValue = uint16(data[idx])
@@ -40,7 +40,7 @@ func (d *DLBufferingSuggestedPacketCount) UnmarshalBinary(data []byte) error {
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

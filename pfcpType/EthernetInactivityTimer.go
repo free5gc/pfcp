@@ -23,13 +23,13 @@ func (e *EthernetInactivityTimer) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5 to 8
 	if length < idx+4 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	e.EthernetInactivityTimer = binary.BigEndian.Uint32(data[idx:])
 	idx = idx + 4
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

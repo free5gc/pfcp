@@ -41,7 +41,7 @@ func (d *DroppedDLTrafficThreshold) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	d.Dlby = utob(data[idx] & BitMask2)
 	d.Dlpa = utob(data[idx] & BitMask1)
@@ -50,7 +50,7 @@ func (d *DroppedDLTrafficThreshold) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+7)
 	if d.Dlpa {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		d.DownlinkPackets = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -59,14 +59,14 @@ func (d *DroppedDLTrafficThreshold) UnmarshalBinary(data []byte) error {
 	// Octet o to (o+7)
 	if d.Dlby {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		d.NumberOfBytesOfDownlinkData = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

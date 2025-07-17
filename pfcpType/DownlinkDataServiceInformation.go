@@ -20,7 +20,7 @@ func (d *DownlinkDataServiceInformation) MarshalBinary() (data []byte, err error
 	// Octet m
 	if d.Ppi {
 		if bits.Len8(d.PagingPolicyIndicationValue) > 6 {
-			return []byte(""), fmt.Errorf("Paging policy information data shall not be greater than 6 bits binary integer")
+			return []byte(""), fmt.Errorf("paging policy information data shall not be greater than 6 bits binary integer")
 		}
 		data = append(data, d.PagingPolicyIndicationValue)
 	}
@@ -42,7 +42,7 @@ func (d *DownlinkDataServiceInformation) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	d.Qfii = utob(data[idx] & BitMask2)
 	d.Ppi = utob(data[idx] & BitMask1)
@@ -51,7 +51,7 @@ func (d *DownlinkDataServiceInformation) UnmarshalBinary(data []byte) error {
 	// Octet m
 	if d.Ppi {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		d.PagingPolicyIndicationValue = data[idx] & Mask6
 		idx = idx + 1
@@ -60,14 +60,14 @@ func (d *DownlinkDataServiceInformation) UnmarshalBinary(data []byte) error {
 	// Octet p
 	if d.Qfii {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		d.Qfi = data[idx] & Mask6
 		idx = idx + 1
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

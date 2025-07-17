@@ -38,14 +38,14 @@ func (s *SDFFilter) MarshalBinary() (data []byte, err error) {
 	// Octet (m+2) to p
 	if s.Fd {
 		if s.LengthOfFlowDescription == 0 {
-			return []byte(""), fmt.Errorf("Length of flow description shall be present if FD is set")
+			return []byte(""), fmt.Errorf("length of flow description shall be present if FD is set")
 		}
 		data = append(data, make([]byte, 2)...)
 		binary.BigEndian.PutUint16(data[idx:], s.LengthOfFlowDescription)
 		idx = idx + 2
 
 		if len(s.FlowDescription) != int(s.LengthOfFlowDescription) {
-			return []byte(""), fmt.Errorf("Unmatch length of flow description: Expect %d, got %d",
+			return []byte(""), fmt.Errorf("unmatch length of flow description: Expect %d, got %d",
 				s.LengthOfFlowDescription, len(s.FlowDescription))
 		}
 		data = append(data, s.FlowDescription...)
@@ -64,7 +64,7 @@ func (s *SDFFilter) MarshalBinary() (data []byte, err error) {
 	// Octet t to (t+3)
 	if s.Spi {
 		if len(s.SecurityParameterIndex) != 4 {
-			return []byte(""), fmt.Errorf("Security parameter index shall be exactly four bytes")
+			return []byte(""), fmt.Errorf("security parameter index shall be exactly four bytes")
 		}
 		data = append(data, s.SecurityParameterIndex...)
 		idx = idx + 4
@@ -73,7 +73,7 @@ func (s *SDFFilter) MarshalBinary() (data []byte, err error) {
 	// Octet v to (v+2)
 	if s.Fl {
 		if len(s.FlowLabel) != 3 {
-			return []byte(""), fmt.Errorf("Flow label shall be exactly three bytes")
+			return []byte(""), fmt.Errorf("flow label shall be exactly three bytes")
 		}
 		data = append(data, s.FlowLabel...)
 		idx = idx + 3
@@ -94,7 +94,7 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	s.Bid = utob(data[idx] & BitMask5)
 	s.Fl = utob(data[idx] & BitMask4)
@@ -105,7 +105,7 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 
 	// Octet 6 (spare)
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	idx = idx + 1
 
@@ -113,13 +113,13 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	// Octet (m+2) to p
 	if s.Fd {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.LengthOfFlowDescription = binary.BigEndian.Uint16(data[idx:])
 		idx = idx + 2
 
 		if length < idx+s.LengthOfFlowDescription {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.FlowDescription = data[idx : idx+s.LengthOfFlowDescription]
 		idx = idx + s.LengthOfFlowDescription
@@ -128,7 +128,7 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	// Octet s to (s+1)
 	if s.Ttc {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.TosTrafficClass = data[idx : idx+2]
 		idx = idx + 2
@@ -137,7 +137,7 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	// Octet t to (t+3)
 	if s.Spi {
 		if length < idx+4 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.SecurityParameterIndex = data[idx : idx+4]
 		idx = idx + 4
@@ -146,7 +146,7 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	// Octet v to (v+2)
 	if s.Fl {
 		if length < idx+3 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.FlowLabel = data[idx : idx+3]
 		idx = idx + 3
@@ -155,14 +155,14 @@ func (s *SDFFilter) UnmarshalBinary(data []byte) error {
 	// Octet w to (w+3)
 	if s.Bid {
 		if length < idx+4 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.SdfFilterId = binary.BigEndian.Uint32(data[idx : idx+4])
 		idx = idx + 4
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

@@ -179,7 +179,7 @@ func (pfcpServer *PfcpServer) PutTransaction(tx *pfcp.Transaction) (err error) {
 		logger.PFCPLog.Warnln("In PutTransaction")
 		logger.PFCPLog.Warnln("Consumer Addr: ", consumerAddr)
 		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " already exist!")
-		err = fmt.Errorf("Insert tx error: duplicate sequence number %d", tx.SequenceNumber)
+		err = fmt.Errorf("insert tx error: duplicate sequence number %d", tx.SequenceNumber)
 	}
 
 	logger.PFCPLog.Traceln("End PutTransaction")
@@ -193,9 +193,10 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 
 	if txTmp, exist := txTable.Load(tx.SequenceNumber); exist {
 		tx = txTmp
-		if tx.TxType == pfcp.SendingRequest {
+		switch tx.TxType {
+		case pfcp.SendingRequest:
 			logger.PFCPLog.Debugf("Remove Request Transaction [%d]", tx.SequenceNumber)
-		} else if tx.TxType == pfcp.SendingResponse {
+		case pfcp.SendingResponse:
 			logger.PFCPLog.Debugf("Remove Request Transaction [%d]", tx.SequenceNumber)
 		}
 
@@ -204,7 +205,7 @@ func (pfcpServer *PfcpServer) RemoveTransaction(tx *pfcp.Transaction) (err error
 		logger.PFCPLog.Warnln("In RemoveTransaction")
 		logger.PFCPLog.Warnln("Consumer IP: ", consumerAddr)
 		logger.PFCPLog.Warnln("Sequence number ", tx.SequenceNumber, " doesn't exist!")
-		err = fmt.Errorf("Remove tx error: transaction [%d] doesn't exist", tx.SequenceNumber)
+		err = fmt.Errorf("remove tx error: transaction [%d] doesn't exist", tx.SequenceNumber)
 	}
 
 	logger.PFCPLog.Traceln("End RemoveTransaction")

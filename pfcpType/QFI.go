@@ -18,7 +18,7 @@ func (q *QFI) MarshalBinary() ([]byte, error) {
 	}
 
 	if err := binary.Write(buf, binary.BigEndian, &q.QFI); err != nil {
-		return nil, fmt.Errorf("marshal QFI fail: " + err.Error())
+		return nil, fmt.Errorf("marshal QFI fail: %s", err.Error())
 	}
 
 	return buf.Bytes(), nil
@@ -28,7 +28,7 @@ func (q *QFI) UnmarshalBinary(data []byte) error {
 	buf := bytes.NewBuffer(data)
 
 	if err := binary.Read(buf, binary.BigEndian, &q.QFI); err != nil {
-		return fmt.Errorf("unmarshal QFI fail: " + err.Error())
+		return fmt.Errorf("unmarshal QFI fail: %s", err.Error())
 	}
 
 	if q.QFI > 63 {

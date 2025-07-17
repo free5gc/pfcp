@@ -41,7 +41,7 @@ func (u *UPFunctionFeatures) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5 to 6
 	if length < idx+2 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.SupportedFeatures = binary.LittleEndian.Uint16(data[idx : idx+2])
 

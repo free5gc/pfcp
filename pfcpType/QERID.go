@@ -14,7 +14,7 @@ func (q *QERID) MarshalBinary() ([]byte, error) {
 	buf := &bytes.Buffer{}
 
 	if err := binary.Write(buf, binary.BigEndian, &q.QERID); err != nil {
-		return nil, fmt.Errorf("marshal QERID fail: " + err.Error())
+		return nil, fmt.Errorf("marshal QERID fail: %s", err.Error())
 	}
 
 	return buf.Bytes(), nil
@@ -24,7 +24,7 @@ func (q *QERID) UnmarshalBinary(data []byte) error {
 	buf := bytes.NewBuffer(data)
 
 	if err := binary.Read(buf, binary.BigEndian, &q.QERID); err != nil {
-		return fmt.Errorf("unmarshal QERID fail: " + err.Error())
+		return fmt.Errorf("unmarshal QERID fail: %s", err.Error())
 	}
 
 	return nil
