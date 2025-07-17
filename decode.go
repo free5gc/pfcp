@@ -13,7 +13,7 @@ func (m *Message) Unmarshal(data []byte) error {
 
 	// Check Message Length field in header
 	if int(m.Header.MessageLength) != len(data)-4 {
-		return fmt.Errorf("Incorrect Message Length: Expected %d, got %d", m.Header.MessageLength, len(data)-4)
+		return fmt.Errorf("incorrect Message Length: Expected %d, got %d", m.Header.MessageLength, len(data)-4)
 	}
 	switch m.Header.MessageType {
 	case PFCP_HEARTBEAT_REQUEST:

@@ -1,6 +1,6 @@
 module github.com/free5gc/pfcp
 
-go 1.21
+go 1.24
 
 require (
 	github.com/free5gc/tlv v1.0.3-0.20241204153300-1005a019612d

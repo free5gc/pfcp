@@ -42,7 +42,7 @@ func (f *FSEID) MarshalBinary() (data []byte, err error) {
 	}
 
 	if !f.V4 && !f.V6 {
-		return []byte(""), fmt.Errorf("At least one of V4 and V6 flags shall be set")
+		return []byte(""), fmt.Errorf("at least one of V4 and V6 flags shall be set")
 	}
 
 	return data, nil
@@ -54,7 +54,7 @@ func (f *FSEID) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	f.V4 = utob(data[idx] & BitMask2)
 	f.V6 = utob(data[idx] & BitMask1)
@@ -62,7 +62,7 @@ func (f *FSEID) UnmarshalBinary(data []byte) error {
 
 	// Octet 6 to 13
 	if length < idx+8 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	f.Seid = binary.BigEndian.Uint64(data[idx:])
 	idx = idx + 8
@@ -70,7 +70,7 @@ func (f *FSEID) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+3)
 	if f.V4 {
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		f.Ipv4Address = net.IP(data[idx : idx+net.IPv4len])
 		idx = idx + net.IPv4len
@@ -79,18 +79,18 @@ func (f *FSEID) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+15)
 	if f.V6 {
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		f.Ipv6Address = net.IP(data[idx : idx+net.IPv6len])
 		idx = idx + net.IPv6len
 	}
 
 	if !f.V4 && !f.V6 {
-		return fmt.Errorf("None of V4 and V6 flags is set")
+		return fmt.Errorf("none of V4 and V6 flags is set")
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

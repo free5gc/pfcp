@@ -19,7 +19,7 @@ type SourceInterface struct {
 func (s *SourceInterface) MarshalBinary() (data []byte, err error) {
 	// Octet 5
 	if bits.Len8(s.InterfaceValue) > 4 {
-		return []byte(""), fmt.Errorf("Interface data shall not be greater than 4 bits binary integer")
+		return []byte(""), fmt.Errorf("interface data shall not be greater than 4 bits binary integer")
 	}
 	data = append([]byte(""), s.InterfaceValue)
 
@@ -32,13 +32,13 @@ func (s *SourceInterface) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	s.InterfaceValue = data[idx] & Mask4
 	idx = idx + 1
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

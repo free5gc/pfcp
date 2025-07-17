@@ -53,7 +53,7 @@ func (u *UEIPAddress) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.Ipv6d = utob(data[idx] & BitMask4)
 	u.Sd = utob(data[idx] & BitMask3)
@@ -64,7 +64,7 @@ func (u *UEIPAddress) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+3)
 	if u.V4 {
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.Ipv4Address = net.IP(data[idx : idx+net.IPv4len])
 		idx = idx + net.IPv4len
@@ -73,7 +73,7 @@ func (u *UEIPAddress) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+15)
 	if u.V6 {
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.Ipv6Address = net.IP(data[idx : idx+net.IPv6len])
 		idx = idx + net.IPv6len
@@ -82,14 +82,14 @@ func (u *UEIPAddress) UnmarshalBinary(data []byte) error {
 	// Octet r
 	if u.V6 && u.Ipv6d {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.Ipv6PrefixDelegationBits = data[idx]
 		idx = idx + 1
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

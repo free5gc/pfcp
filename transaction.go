@@ -93,7 +93,7 @@ func (tx *Transaction) StartSendingRequest() (*ReceiveEvent, error) {
 	for iter := 0; iter < NumOfResend; iter++ {
 		_, err := tx.Conn.WriteToUDP(tx.SendMsg, tx.DestAddr)
 		if err != nil {
-			return nil, fmt.Errorf("Request Transaction [%d]: %s", tx.SequenceNumber, err)
+			return nil, fmt.Errorf("request Transaction [%d]: %s", tx.SequenceNumber, err)
 		}
 		logger.PFCPLog.Tracef("Request Transaction [%d]: Sent a PFCP request packet", tx.SequenceNumber)
 
@@ -108,7 +108,7 @@ func (tx *Transaction) StartSendingRequest() (*ReceiveEvent, error) {
 			continue
 		}
 	}
-	return nil, fmt.Errorf("Request Transaction [%d]: retry-out", tx.SequenceNumber)
+	return nil, fmt.Errorf("request Transaction [%d]: retry-out", tx.SequenceNumber)
 }
 
 func (tx *Transaction) StartSendingResponse() error {
@@ -121,7 +121,7 @@ func (tx *Transaction) StartSendingResponse() error {
 	for {
 		_, err := tx.Conn.WriteToUDP(tx.SendMsg, tx.DestAddr)
 		if err != nil {
-			return fmt.Errorf("Response Transaction [%d]: sending error", tx.SequenceNumber)
+			return fmt.Errorf("response Transaction [%d]: sending error", tx.SequenceNumber)
 		}
 
 		select {

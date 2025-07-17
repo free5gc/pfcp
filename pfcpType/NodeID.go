@@ -70,7 +70,7 @@ func (n *NodeID) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	n.NodeIdType = data[idx] & Mask4
 	idx = idx + 1
@@ -79,14 +79,14 @@ func (n *NodeID) UnmarshalBinary(data []byte) error {
 	switch n.NodeIdType {
 	case NodeIdTypeIpv4Address:
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		n.IP = data[idx : idx+net.IPv4len]
 		n.FQDN = ""
 		idx = idx + net.IPv4len
 	case NodeIdTypeIpv6Address:
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		n.IP = data[idx : idx+net.IPv6len]
 		n.FQDN = ""
@@ -99,7 +99,7 @@ func (n *NodeID) UnmarshalBinary(data []byte) error {
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	return nil
 }

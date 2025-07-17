@@ -82,7 +82,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	v.Dlnop = utob(data[idx] & BitMask6)
 	v.Ulnop = utob(data[idx] & BitMask5)
@@ -95,7 +95,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+7)
 	if v.Tovol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.TotalVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -104,7 +104,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+7)
 	if v.Ulvol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.UplinkVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -113,7 +113,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet q to (q+7)
 	if v.Dlvol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.DownlinkVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -122,7 +122,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet r to (r+7)
 	if v.Tonop {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.TotalPktNum = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -131,7 +131,7 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet s to (s+7)
 	if v.Ulnop {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.UplinkPktNum = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -140,14 +140,14 @@ func (v *VolumeMeasurement) UnmarshalBinary(data []byte) error {
 	// Octet t to (t+7)
 	if v.Dlnop {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		v.DownlinkPktNum = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

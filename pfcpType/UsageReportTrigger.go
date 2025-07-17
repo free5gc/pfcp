@@ -66,7 +66,7 @@ func (u *UsageReportTrigger) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length != 3 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.Immer = utob(data[idx] & BitMask8)
 	u.Droth = utob(data[idx] & BitMask7)
@@ -80,7 +80,7 @@ func (u *UsageReportTrigger) UnmarshalBinary(data []byte) error {
 
 	// Octet 6
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.Eveth = utob(data[idx] & BitMask8)
 	u.Macar = utob(data[idx] & BitMask7)
@@ -94,7 +94,7 @@ func (u *UsageReportTrigger) UnmarshalBinary(data []byte) error {
 
 	// Octet 6
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.Emrre = utob(data[idx] & BitMask5)
 	u.Quvti = utob(data[idx] & BitMask4)
@@ -104,7 +104,7 @@ func (u *UsageReportTrigger) UnmarshalBinary(data []byte) error {
 	idx = idx + 1
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

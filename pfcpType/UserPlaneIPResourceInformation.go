@@ -55,7 +55,7 @@ func (u *UserPlaneIPResourceInformation) MarshalBinary() (data []byte, err error
 	}
 
 	if !u.V4 && !u.V6 {
-		return []byte(""), fmt.Errorf("At least one of V4 and V6 flags shall be set")
+		return []byte(""), fmt.Errorf("at least one of V4 and V6 flags shall be set")
 	}
 
 	// Octet k to l
@@ -70,7 +70,7 @@ func (u *UserPlaneIPResourceInformation) MarshalBinary() (data []byte, err error
 	// Octet r
 	if u.Assosi {
 		if bits.Len8(u.SourceInterface) > 4 {
-			return []byte(""), fmt.Errorf("Source interface shall not be greater than 4 bits binary integer")
+			return []byte(""), fmt.Errorf("source interface shall not be greater than 4 bits binary integer")
 		}
 		data = append(data, u.SourceInterface)
 	}
@@ -84,7 +84,7 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	u.Assosi = utob(data[idx] & BitMask7)
 	u.Assoni = utob(data[idx] & BitMask6)
@@ -96,7 +96,7 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	// Octet 6
 	if u.Teidri != 0 {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.TeidRange = data[idx]
 		idx = idx + 1
@@ -105,7 +105,7 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+3)
 	if u.V4 {
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.Ipv4Address = net.IP(data[idx : idx+net.IPv4len])
 		idx = idx + net.IPv4len
@@ -114,20 +114,20 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+15)
 	if u.V6 {
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.Ipv6Address = net.IP(data[idx : idx+net.IPv6len])
 		idx = idx + net.IPv6len
 	}
 
 	if !u.V4 && !u.V6 {
-		return fmt.Errorf("None of V4 and V6 flags is set")
+		return fmt.Errorf("none of V4 and V6 flags is set")
 	}
 
 	// Octet r
 	if u.Assosi {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		u.SourceInterface = data[length-1] & Mask4
 		data = data[:length-1]
@@ -136,7 +136,7 @@ func (u *UserPlaneIPResourceInformation) UnmarshalBinary(data []byte) error {
 	// Octet k to l
 	if u.Assoni {
 		if length < idx+1 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		err := u.NetworkInstance.UnmarshalBinary(data[idx:])
 		if err != nil {

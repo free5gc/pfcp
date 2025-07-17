@@ -52,7 +52,7 @@ func (s *SubsequentVolumeThreshold) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	s.Dlvol = utob(data[idx] & BitMask3)
 	s.Ulvol = utob(data[idx] & BitMask2)
@@ -62,7 +62,7 @@ func (s *SubsequentVolumeThreshold) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+7)
 	if s.Tovol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.TotalVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -71,7 +71,7 @@ func (s *SubsequentVolumeThreshold) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+7)
 	if s.Ulvol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.UplinkVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
@@ -80,14 +80,14 @@ func (s *SubsequentVolumeThreshold) UnmarshalBinary(data []byte) error {
 	// Octet q to (q+7)
 	if s.Dlvol {
 		if length < idx+8 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		s.DownlinkVolume = binary.BigEndian.Uint64(data[idx:])
 		idx = idx + 8
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

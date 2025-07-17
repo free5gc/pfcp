@@ -80,7 +80,7 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	presenceByte := data[idx]
@@ -90,13 +90,13 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 	// flow Description presence
 	if utob(presenceByte & BitMask1) {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		flowDescriptionLen := binary.BigEndian.Uint16(data[idx:])
 		idx = idx + 2
 
 		if length < idx+flowDescriptionLen {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		p.FlowDescription = string(data[idx : idx+flowDescriptionLen])
 		idx = idx + flowDescriptionLen
@@ -105,13 +105,13 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 	// URL presence
 	if utob(presenceByte & BitMask2) {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		urlLen := binary.BigEndian.Uint16(data[idx:])
 		idx = idx + 2
 
 		if length < idx+urlLen {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		p.URL = string(data[idx : idx+urlLen])
 		idx = idx + urlLen
@@ -120,13 +120,13 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 	// domain name presence
 	if utob(presenceByte & BitMask3) {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		domainNameLen := binary.BigEndian.Uint16(data[idx:])
 		idx = idx + 2
 
 		if length < idx+domainNameLen {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		p.DomainName = string(data[idx : idx+domainNameLen])
 		idx = idx + domainNameLen
@@ -135,13 +135,13 @@ func (p *PFDContents) UnmarshalBinary(data []byte) error {
 	// custom PFD content presence
 	if utob(presenceByte & BitMask4) {
 		if length < idx+2 {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		custemPFDContentLen := binary.BigEndian.Uint16(data[idx:])
 		idx += 2
 
 		if length < idx+custemPFDContentLen {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		p.CustomPFDContent = data[idx : idx+custemPFDContentLen]
 		// idx += custemPFDContentLen

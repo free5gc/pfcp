@@ -13,7 +13,7 @@ type MeasurementMethod struct {
 func (m *MeasurementMethod) MarshalBinary() (data []byte, err error) {
 	// Octet 5
 	if !m.Event && !m.Volum && !m.Durat {
-		return []byte(""), fmt.Errorf("At least one of EVENT, VOLUM and DURAT shall be set")
+		return []byte(""), fmt.Errorf("at least one of EVENT, VOLUM and DURAT shall be set")
 	}
 	tmpUint8 := btou(m.Event)<<2 |
 		btou(m.Volum)<<1 |
@@ -29,7 +29,7 @@ func (m *MeasurementMethod) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	m.Event = utob(data[idx] & BitMask3)
 	m.Volum = utob(data[idx] & BitMask2)
@@ -37,11 +37,11 @@ func (m *MeasurementMethod) UnmarshalBinary(data []byte) error {
 	idx = idx + 1
 
 	if !m.Event && !m.Volum && !m.Durat {
-		return fmt.Errorf("None of EVENT, VOLUM and DURAT is set")
+		return fmt.Errorf("none of EVENT, VOLUM and DURAT is set")
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

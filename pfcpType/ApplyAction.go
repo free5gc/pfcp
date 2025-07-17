@@ -30,7 +30,7 @@ func (a *ApplyAction) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	a.Dupl = utob(data[idx] & BitMask5)
 	a.Nocp = utob(data[idx] & BitMask4)
@@ -40,7 +40,7 @@ func (a *ApplyAction) UnmarshalBinary(data []byte) error {
 	idx = idx + 1
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

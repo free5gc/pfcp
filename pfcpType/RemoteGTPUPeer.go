@@ -34,7 +34,7 @@ func (r *RemoteGTPUPeer) MarshalBinary() (data []byte, err error) {
 	}
 
 	if (r.V4 && r.V6) || (!r.V4 && !r.V6) {
-		return []byte(""), fmt.Errorf("Either V4 and V6 shall be set")
+		return []byte(""), fmt.Errorf("either V4 and V6 shall be set")
 	}
 
 	return data, nil
@@ -46,7 +46,7 @@ func (r *RemoteGTPUPeer) UnmarshalBinary(data []byte) error {
 	var idx uint16 = 0
 	// Octet 5
 	if length < idx+1 {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 	r.V4 = utob(data[idx] & BitMask2)
 	r.V6 = utob(data[idx] & BitMask1)
@@ -55,7 +55,7 @@ func (r *RemoteGTPUPeer) UnmarshalBinary(data []byte) error {
 	// Octet m to (m+3)
 	if r.V4 {
 		if length < idx+net.IPv4len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		r.Ipv4Address = net.IP(data[idx : idx+net.IPv4len])
 		idx = idx + net.IPv4len
@@ -64,18 +64,18 @@ func (r *RemoteGTPUPeer) UnmarshalBinary(data []byte) error {
 	// Octet p to (p+15)
 	if r.V6 {
 		if length < idx+net.IPv6len {
-			return fmt.Errorf("Inadequate TLV length: %d", length)
+			return fmt.Errorf("inadequate TLV length: %d", length)
 		}
 		r.Ipv6Address = net.IP(data[idx : idx+net.IPv6len])
 		idx = idx + net.IPv6len
 	}
 
 	if (r.V4 && r.V6) || (!r.V4 && !r.V6) {
-		return fmt.Errorf("Both or none of V4 and V6 is set")
+		return fmt.Errorf("both or none of V4 and V6 is set")
 	}
 
 	if length != idx {
-		return fmt.Errorf("Inadequate TLV length: %d", length)
+		return fmt.Errorf("inadequate TLV length: %d", length)
 	}
 
 	return nil

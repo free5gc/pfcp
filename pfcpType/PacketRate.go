@@ -60,18 +60,18 @@ func (p *PacketRate) UnmarshalBinary(data []byte) error {
 
 	// octet 1
 	if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {
-		return errors.New("Packet Rate flag read fail: " + err.Error())
+		return errors.New("packet Rate flag read fail: " + err.Error())
 	}
 	p.ULPR = utob(tmpByte & (1 << 0))
 	p.DLPR = utob(tmpByte & (1 << 1))
 
 	if p.ULPR {
 		if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {
-			return errors.New("Packet Rate UL Time Unit read fail: " + err.Error())
+			return errors.New("packet Rate UL Time Unit read fail: " + err.Error())
 		}
 
 		if tmpByte > 4 {
-			return errors.New("Packet Rate UL Time Unit should be 0 to 4")
+			return errors.New("packet Rate UL Time Unit should be 0 to 4")
 		} else {
 			p.ULTimeUnit = PacketRateTimeUnit(tmpByte)
 		}
@@ -83,10 +83,10 @@ func (p *PacketRate) UnmarshalBinary(data []byte) error {
 
 	if p.DLPR {
 		if err := binary.Read(buf, binary.BigEndian, &tmpByte); err != nil {
-			return errors.New("Packet Rate DL Time Unit read fail: " + err.Error())
+			return errors.New("packet Rate DL Time Unit read fail: " + err.Error())
 		}
 		if tmpByte > 4 {
-			return errors.New("Packet Rate DL Time Unit should be 0 to 4")
+			return errors.New("packet Rate DL Time Unit should be 0 to 4")
 		} else {
 			p.DLTimeUnit = PacketRateTimeUnit(tmpByte)
 		}
