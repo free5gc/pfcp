@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/free5gc/tlv v1.0.3-0.20241204153300-1005a019612d
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.8.3
 	github.com/stretchr/testify v1.8.3
 	github.com/tim-ywliu/nested-logrus-formatter v1.3.2
 )
