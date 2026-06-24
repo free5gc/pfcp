@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/free5gc/pfcp"
 	"github.com/free5gc/pfcp/logger"
@@ -96,12 +97,16 @@ func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
 		}
 		if tx != nil {
 			// tx != nil => Already Replied => Resend Request
-			tx.EventChannel <- pfcp.ReceiveEvent{
+			select {
+			case tx.EventChannel <- pfcp.ReceiveEvent{
 				Type:       pfcp.ReceiveEventTypeResendRequest,
 				RemoteAddr: addr,
 				RcvMsg:     pfcpMsg,
+			}:
+				return msg, ErrReceivedResentRequest
+			case <-time.After(2 * time.Second):
+				return msg, fmt.Errorf("send to EventChannel timeout for tx %d", tx.SequenceNumber)
 			}
-			return msg, ErrReceivedResentRequest
 		} else {
 			// tx == nil => New Request
 			return msg, nil
@@ -111,11 +116,14 @@ func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
 		if err != nil {
 			return msg, err
 		}
-
-		tx.EventChannel <- pfcp.ReceiveEvent{
+		select {
+		case tx.EventChannel <- pfcp.ReceiveEvent{
 			Type:       pfcp.ReceiveEventTypeValidResponse,
 			RemoteAddr: addr,
 			RcvMsg:     pfcpMsg,
+		}:
+		case <-time.After(2 * time.Second):
+			return msg, fmt.Errorf("send to EventChannel timeout for tx %d", tx.SequenceNumber)
 		}
 	}
 
