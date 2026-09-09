@@ -76,3 +76,36 @@ func TestUnmarshal(t *testing.T) {
 		})
 	}
 }
+
+func TestUnmarshalRejectsMalformedHeaders(t *testing.T) {
+	testCases := []struct {
+		name      string
+		input     []byte
+		errorText string
+	}{
+		{
+			name:      "too short",
+			input:     []byte{0x20, byte(PFCP_ASSOCIATION_SETUP_REQUEST), 0x00, 0x00},
+			errorText: "PFCP packet too short: 4",
+		},
+		{
+			name:      "session message has only node header",
+			input:     []byte{0x20, byte(PFCP_SESSION_ESTABLISHMENT_REQUEST), 0x00, 0x04, 0x00, 0x00, 0x01, 0x00},
+			errorText: "PFCP packet too short: 8",
+		},
+		{
+			name:      "invalid version",
+			input:     []byte{0x40, byte(PFCP_HEARTBEAT_REQUEST), 0x00, 0x04, 0x00, 0x00, 0x01, 0x00},
+			errorText: "invalid PFCP version: 2",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var msg Message
+			err := msg.Unmarshal(tc.input)
+			require.Error(t, err)
+			require.ErrorContains(t, err, tc.errorText)
+		})
+	}
+}

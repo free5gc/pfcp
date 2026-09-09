@@ -3,7 +3,7 @@ package pfcp
 import (
 	"bytes"
 	"encoding/binary"
-	"errors"
+	"fmt"
 
 	"github.com/free5gc/pfcp/logger"
 )
@@ -73,26 +73,33 @@ func (h *Header) MarshalBinary() (data []byte, err error) {
 }
 
 func (h *Header) UnmarshalBinary(data []byte) error {
+	if len(data) < 8 {
+		return fmt.Errorf("PFCP packet too short: %d", len(data))
+	}
+
 	var tmpBuf uint8
 	byteReader := bytes.NewReader(data)
 	if err := binary.Read(byteReader, binary.BigEndian, &tmpBuf); err != nil {
-		return errors.New("")
+		return fmt.Errorf("failed to read PFCP flags: %w", err)
 	}
 	h.Version, h.MP, h.S = tmpBuf>>5, (tmpBuf&0x02)>>1, tmpBuf&0x01
+	if h.Version != PfcpVersion {
+		return fmt.Errorf("invalid PFCP version: %d", h.Version)
+	}
 	if err := binary.Read(byteReader, binary.BigEndian, &h.MessageType); err != nil {
-		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+		return fmt.Errorf("failed to read PFCP message type: %w", err)
 	}
 	if err := binary.Read(byteReader, binary.BigEndian, &h.MessageLength); err != nil {
-		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+		return fmt.Errorf("failed to read PFCP message length: %w", err)
 	}
 	if h.S&1 != 0 {
 		if err := binary.Read(byteReader, binary.BigEndian, &h.SEID); err != nil {
-			logger.PFCPLog.Warnf("Binary write error: %+v", err)
+			return fmt.Errorf("failed to read PFCP SEID: %w", err)
 		}
 	}
 	var snAndSpare uint32
 	if err := binary.Read(byteReader, binary.BigEndian, &snAndSpare); err != nil {
-		logger.PFCPLog.Warnf("Binary write error: %+v", err)
+		return fmt.Errorf("failed to read PFCP sequence number: %w", err)
 	}
 
 	h.SequenceNumber = snAndSpare >> 8

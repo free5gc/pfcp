@@ -60,3 +60,31 @@ func TestPFCPHeader_UnmarshalBinary(t *testing.T) {
 	_ = tmpHeader.UnmarshalBinary(payload)
 	assert.Equal(t, SessionRelatedHeader, tmpHeader)
 }
+
+func TestPFCPHeaderUnmarshalBinaryRejectsTruncatedSessionHeader(t *testing.T) {
+	testCases := []struct {
+		name      string
+		input     []byte
+		errorText string
+	}{
+		{
+			name:      "missing SEID",
+			input:     []byte{0x21, byte(PFCP_SESSION_ESTABLISHMENT_REQUEST), 0x00, 0x04, 0x00, 0x00, 0x01, 0x00},
+			errorText: "failed to read PFCP SEID",
+		},
+		{
+			name:      "missing sequence number",
+			input:     []byte{0x21, byte(PFCP_SESSION_ESTABLISHMENT_REQUEST), 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02},
+			errorText: "failed to read PFCP sequence number",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var header Header
+			err := header.UnmarshalBinary(tc.input)
+			assert.Error(t, err)
+			assert.ErrorContains(t, err, tc.errorText)
+		})
+	}
+}
