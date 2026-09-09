@@ -8,7 +8,11 @@ import (
 
 func (m *Message) Unmarshal(data []byte) error {
 	if err := m.Header.UnmarshalBinary(data); err != nil {
-		return fmt.Errorf("pfcp: unmarshal msg failed: %s", err)
+		return fmt.Errorf("pfcp: unmarshal msg failed: %w", err)
+	}
+	headerLen := m.Header.Len()
+	if len(data) < headerLen {
+		return fmt.Errorf("PFCP packet too short: %d", len(data))
 	}
 
 	// Check Message Length field in header

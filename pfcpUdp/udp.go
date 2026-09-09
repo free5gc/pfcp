@@ -85,6 +85,7 @@ func (pfcpServer *PfcpServer) ReadFrom() (*Message, error) {
 
 	err = pfcpMsg.Unmarshal(buf[:n])
 	if err != nil {
+		logger.PFCPLog.Warnf("Discarding malformed PFCP datagram from %s: %v", addr, err)
 		return msg, err
 	}
 
